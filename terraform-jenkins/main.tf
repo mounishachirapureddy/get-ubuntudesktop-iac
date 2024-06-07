@@ -3,5 +3,5 @@ provider "google" {
 }
 
 module "jenkins-server" {
-source = "/root/terraform-jenkins/modules/jenkins-server"
+source = "/root/get-ubuntudesktop-iac/terraform-jenkins/modules/jenkins-server"
 }
