@@ -7,7 +7,9 @@ This project aims to automate the provisioning and configuration of infrastructu
 
 ## **The process involves the following Key Steps:**
 
-1. **Provision Jenkins Server**: Create the necessary infrastructure on the Google Cloud Platform (GCP) using Terraform. This includes a Virtual Private Cloud (VPC), a Service Account, and a Virtual Machine (VM) instance configured as a Jenkins server.
+1. **Provision Jenkins Server**: 
+   Create the necessary infrastructure on the Google Cloud Platform (GCP) using Terraform. This includes a Virtual Private Cloud (VPC), a Service Account, and a Virtual Machine (VM) instance configured as a 	 
+   Jenkins server.
 
 2. **Provision Ubuntu Desktop Server**: Use another Terraform script to provision a VM instance running Ubuntu 20.04. This VM will connect to the previously created VPC and serve as a remote desktop environment.
 
