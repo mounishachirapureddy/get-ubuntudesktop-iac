@@ -1,9 +1,9 @@
 module "networking" {
-source = "/root/get-ubuntudesktop-iac/terraform-jenkins/modules/networking"
+source = "/root/get-ubuntudesktop-iac/terraform/modules/networking"
 }
 
 module "service-account" {
-source = "/root/get-ubuntudesktop-iac/terraform-jenkins/modules/service-account"
+source = "/root/get-ubuntudesktop-iac/terraform/modules/service-account"
 }
 
 resource "google_compute_instance" "bastion" {
