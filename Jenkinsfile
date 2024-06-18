@@ -1,229 +1,100 @@
 pipeline {
-
     agent {
-
         label 'docker'
-
     }
-
     environment {
-
-        ANSIBLE_INVENTORY_PATH = "/var/lib/jenkins/inventory.ini"
-
+        GCP_CREDENTIALS = credentials('SVC_CREDENTIALS')
     }
-
     stages {
-
         stage('Checkout') {
-
-            when {
-
-                expression {
-
-                    return action == 'apply' || action == 'destroy'
-
-                }
-
-            }
-
             steps {
-
                 git branch: 'main', url: 'https://github.com/summu97/ASSESMENT.git'
-
             }
-
         }
-
-        stage('Desktop-tfm-init') {
-
+        stage('tfm-init') {
             when {
-
                 expression {
-
-                    return action == 'apply' || action == 'destroy'
-
+                    return tfm_action == 'apply' || tfm_action == 'destroy'
                 }
-
             }
-
             steps {
-
                 sh '''
-
-                cd /var/lib/jenkins/workspace/pipeline-1/terraform-desktop
-
+                cd /var/lib/jenkins/workspace/desktop/terraform-desktop
                 terraform init
-
                 '''
-
             }
-
         }
-
-        stage('Desktop-tfm-plan') {
-
+        stage('tfm-plan') {
             when {
-
                 expression {
-
-                    return action == 'apply' || action == 'destroy'
-
+                    return tfm_action == 'apply'
                 }
-
             }
-
             steps {
-
                 sh '''
-
-                cd /var/lib/jenkins/workspace/pipeline-1/terraform-desktop
-
+                cd /var/lib/jenkins/workspace/desktop/terraform-desktop
                 terraform plan
-
                 '''
-
             }
-
         }
-
-        stage('Desktop-tfm-action') {
-
+        stage('tfm-action') {
             when {
-
                 expression {
-
-                    return action == 'apply' || action == 'destroy'
-
+                    return tfm_action == 'apply' || tfm_action == 'destroy'
                 }
-
             }
-
             steps {
-
                 sh '''
-
-                cd /var/lib/jenkins/workspace/pipeline-1/terraform-desktop
-
-                terraform $action --auto-approve
-
+                cd /var/lib/jenkins/workspace/desktop/terraform-desktop
+                terraform $tfm_action --auto-approve
                 '''
-
             }
-
         }
-
-        stage('Create-Inventory-File') {
-
+        stage('ansible.cfg') {
             when {
-
                 expression {
-
-                    return action == 'ansible'
-
+                    return tfm_action == 'ansible'
                 }
-
             }
-
             steps {
-
+                sh 'cat ./ansible/ansible.cfg | sudo tee /etc/ansible/ansible.cfg'
+            }
+        }
+        stage('Copy GCP Credentials to Slave Agent') {
+            when {
+                expression {
+                    return tfm_action == 'ansible'
+                }
+            }
+            steps {
                 script {
+                    // Define the path where the GCP credentials will be copied on the slave agent
+                    def destPath = '/var/lib/jenkins/workspace/desktop/ansible/service-account.json'
 
-                    sh '''
-
-                    sudo touch ${ANSIBLE_INVENTORY_PATH}
-
-                    private_ip=$(gcloud compute instances describe default-desktop-server --zone us-west1-b --format='value(networkInterfaces[0].networkIP)')
-
-                    echo "[desktop]" | sudo tee -a ${ANSIBLE_INVENTORY_PATH}
-
-                    echo "${private_ip}" | sudo tee -a ${ANSIBLE_INVENTORY_PATH}
-
-                    '''
-
+                    // Write the secret file to the destination path on the slave agent
+                    writeFile file: destPath, text: new String(readFile(env.GCP_CREDENTIALS).bytes)
                 }
-
             }
-
         }
-
-        stage('Configure Ansible') {
-
-            when {
-
+        stage('Playbook-apply'){
+             when {
                 expression {
-
-                    return action == 'ansible'
-
+                    return tfm_action == 'ansible' && ansible_action == 'apply'
                 }
-
             }
-
             steps {
-
-                script {
-
-                    sh '''
-
-                    if ! grep -q "^[defaults]" /etc/ansible/ansible.cfg; then
-
-                        echo "[defaults]" | sudo tee -a /etc/ansible/ansible.cfg
-
-                    fi
- 
-                    echo 'host_key_checking = False' | sudo tee -a /etc/ansible/ansible.cfg
-
-                    '''
-
-                }
-
+                sh 'ansible-playbook -e "target_hosts=$target_hosts" -e "operation=$ansible_action" ansible/master.yaml'
             }
-
         }
-
-        stage('instance wait time for 60 seconds') {
-
-            when {
-
+        stage('Playbook-destroy'){
+             when {
                 expression {
-
-                    return action == 'ansible'
-
+                    return tfm_action == 'ansible' && ansible_action == 'destroy'
                 }
-
             }
-
-            steps{
-
-                script{
-
-                    sleep(time: 60, unit: 'SECONDS')
-
-                }
-
-            }
-
-        }
-
-        stage('Conf-Desktop-server') {
-
-            when {
-
-                expression {
-
-                    return action == 'ansible'
-
-                }
-
-            }
-
             steps {
-
-                sh 'ansible-playbook -i /var/lib/jenkins/inventory.ini playbook.yml -u root'
-
+                sh 'ansible-playbook -e "target_hosts=$target_hosts" -e "operation=$ansible_action" ansible/master.yaml'
             }
-
         }
-
     }
-
 }
