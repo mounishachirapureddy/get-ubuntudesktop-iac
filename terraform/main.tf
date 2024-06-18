@@ -10,5 +10,5 @@ terraform {
 }
 
 module "jenkins-server" {
-source = "/root/get-ubuntudesktop-iac/terraform-jenkins/modules/jenkins-server"
+source = "/root/get-ubuntudesktop-iac/terraform/modules/jenkins-server"
 }
