@@ -1,5 +1,5 @@
 variable "project_id" {
-description = "jenkins-sa"
+description = "custom-svc"
 type = string
 default = "sumanth-97"
 }
@@ -9,7 +9,7 @@ variable "roles" {
     "roles/compute.networkAdmin",
     "roles/compute.securityAdmin",
     "roles/iam.serviceAccountUser",
-    "roles/compute.instanceAdmin",
+    "roles/compute.instanceAdmin.v1",
     "roles/storage.admin"
   ]
 }
