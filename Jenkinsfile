@@ -3,7 +3,8 @@ pipeline {
         label 'docker'
     }
     environment {
-        GCP_CREDENTIALS = credentials('SVC_CREDENTIALS')
+        // Add your json file credentials here
+        GCP_CREDENTIALS = credentials('svc-json')
     }
     stages {
         stage('Checkout') {
