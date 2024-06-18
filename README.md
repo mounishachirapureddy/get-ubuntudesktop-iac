@@ -68,7 +68,7 @@ This project aims to automate the provisioning and configuration of infrastructu
     • git clone https://github.com/bpurnachander/get-ubuntudesktop-iac.git
 ```
 
-### Step 5:Building image and pushing to Docker Hub.
+### Step 5: Building image and pushing to Docker Hub.
 ```
       cd get-ubuntudesktop-iac
 
