@@ -5,10 +5,10 @@ provider "google" {
 terraform {
   backend "gcs" {
     bucket  = "sumanth-state-backup-bucket"
-    prefix  = "terraform/state"
+    prefix  = "terraform-desktop/state"
   }
 }
 
 module "desktop-server" {
-source = "/var/lib/jenkins/workspace/pipeline-1/terraform-desktop/modules/desktop-server"
+source = "/var/lib/jenkins/workspace/desktop/terraform-desktop/modules/desktop-server"
 }
