@@ -79,13 +79,15 @@ This project aims to automate the provisioning and configuration of infrastructu
     # Provide Docker Hub credentials(username & password)
 
 ```
-![alt text](image.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/271dc614-4bdb-4bc6-a303-e0d68cdee722)
+
 ```
 docker build -t username/repo_name .
 docker push username/repo_name
 ```
-![alt text](image-1.png)
-![alt text](image-2.png)
+![image-1](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/8b05247d-2d1a-446c-97dd-5e45db547170)
+
+![image-2](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/7179d505-96d3-4e77-aa84-2589725379db)
 
 ### Step 6: Creating Infrastructure using terraform.
 ```
@@ -98,25 +100,33 @@ docker push username/repo_name
 > Make sure to change necessary sections like **Project-ID**, **Backup-bucket-name** & **Source Path** in the **main.tf** file 
   with your details.
 
-![alt text](image-3.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/1ecbd237-7c24-453a-a579-84d9c82bf95f)
 
 ### Step 7: Connect to jenkins VM-instance SSH – Terminal & get Jenkins UI Password.
 ```
 cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
-![alt text](image-4.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/5d26fc07-9174-49e5-936e-f079b34843e5)
+
 
 ### Step 8: Connecting to “Jenkins-UI”.
 
 >        Browse “Jenkins-server-Public-IP:8080” and paste above “password” here.
-![alt text](image-5.png)
-![alt text](image-6.png)
-![alt text](image-7.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/205ec6a1-1e81-4c41-b275-733bc16d25e4)
 
->**Add new “Jenkins credentials”.**
-![alt text](image-8.png)
-![alt text](image-9.png)
-![alt text](image-10.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/b1a3a664-6026-49c6-9838-d47b27bcf02a)
+
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/6eb511b8-ae20-4df3-b93d-16cc7c25e478)
+
+
+# **Add new “Jenkins credentials”.**
+
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/8ce47e5a-db61-411e-a679-d1774b137441)
+
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/06e408d7-cc1f-4bee-952e-c74e54669549)
+
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/d7dd72b1-87fe-44db-a977-50b78083f908)
+
 
 ### Step 9: Installing necessary plugins: 
             - Docker
@@ -124,7 +134,8 @@ cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
         Dashboard--> Manage Jenkins--> Plugins --> Available plugins --> "search for plugins & Install"
 ```
-![alt text](image-11.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/fdca3581-6e02-4104-8c8f-17c7d6cd0e85)
+
 
 ### Step 10: Adding global credentials for:
             - Docker Hub.
@@ -136,23 +147,24 @@ Manage Jenkins -> credentials -> global -> add credentials -> kind (username &
 password) -> username & password (docker-hub username & password) -> Id(docker-hub) 
 -> save
 ```
-![Docker Hub credentials](image-12.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/62a9ce63-fe4a-4d87-bf81-e3a4133b926e)
+
 
 >Adding Jenkins-agent credentials.
 ```
 Manage Jenkins --> credentials -> global -> add credentials -> kind (username &
 password) -> username (jenkins) -> password (password) -> Id (jenkins-user)-> save
 ```
-![Jenkins-agent](image-13.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/78b57dfb-4e77-4203-8047-7671672ec7c9)
 
->Adding Service-account json key credentials
+>Adding Service-account JSON key credentials
 ```
 Manage Jenkins --> credentials -> global -> add credentials -> kind (Secret file) 
 -> File(Choose file)--> ID(svc-json)-> save
 ```
-![svc](image-14.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/86a3dee6-f96d-4d52-bf8a-4bb01d2f993a)
 
-### Step 11: Create new Pipeline job
+### Step 11: Create a new Pipeline job
 ```
 Dashboard--> + New Item--> Enter an item name(desktop)--> Pipeline--> OK
 
@@ -161,8 +173,8 @@ NOTE: Kindly add your pipeline name as per the path of terraform code .
 source = "/var/lib/jenkins/workspace/Youre-pipeline-Name/terraform-folder-Namae/modules/desktop-server"
 ```
 >E.g:
-![alt text](image-15.png)
-![alt text](image-16.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/075ac101-e391-44ad-a9db-786a5bc7c0f2)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/a0a85b50-4d41-41b6-bcb8-15c6ec235954)
 
 ### Step 12: Integrating Git for source code.
 ```
@@ -170,8 +182,8 @@ Pipeline-->Definition(Pipeline script from SCM)--> SCM(Git)--> Repositories
 --> Repository URL(https://github.com/bpurnachander/get-ubuntudesktop-iac.git)
 --> Branches to build--> Branch Specifier(*/main)-->Script Path(Jenkins)--> Save
 ```
-![alt text](image-17.png)
-![alt text](image-18.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/617b64f1-0b15-4477-840d-8e693934fa3d)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/78a75e86-a395-43ee-85ac-f130b8d35b48)
 
 ### Step 13: Adding parameters
 ```
@@ -179,54 +191,54 @@ This Project is Parameterized
 --> Add Parameter
 --> Choice Parameter--> Name(tfm_action)--> Choices(apply, destroy, ansible)
 ```
-![alt text](image-19.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/6ca7f240-3490-4174-b958-dc5f562193e1)
 ```
 --> Add Parameter
 --> Choice Parameter--> Name(ansible_action)--> Choices(---, apply, destroy)
 ```
-![alt text](image-20.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/888e1f21-7c47-4e3b-bdcb-2a5c08239ea4)
 ```
 --> Add Parameter
 --> Choice Parameter--> Name(target_hosts)--> Choices(---, desktop, apache2)
 ```
-![alt text](image-21.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/e00d8b25-7a5b-4dc0-8f05-1b7d1c67f969)
 
 ### Step 14: Configuring Docker as Jenkins-agent.
 ```
 Dashboard--> Manage Jenkins--> Clouds--> New cloud--> Cloud name(docker)--> Type
 --> Docker(select it)-->Create
 ```
-![alt text](image-22.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/e6e18f09-d3e0-4b93-a916-97cb212b0504)
 ```
 	--> Docker Cloud details--> Docker Host URI--> tcp://Public-IP:4243--> Test Connection
 	    Output will be like(Version = 24.0.5, API Version = 1.43)
 	-->Enabled(click it)
 ```
-![alt text](image-23.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/8b5c13a2-9cf8-447b-b495-f6fe42a76fda)
 ```
     --> Docker Agent templates--> Add Docker Template--> Labels-->docker--> Enabled
     --> Name--> docker-agent--> Docker Image--> GIVE YOUR IMAGE
 ```
-![alt text](image-24.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/44190195-3986-4b8b-ac53-dc5f5aeb8fda)
 ```
 	--> Registry Authentication(select Docker Hub credentials ID)
 	--> Remote File System Root--> /var/lib/jenkins
 ```
-![alt text](image-25.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/71d45b50-23d6-43a5-a3de-a5def9047a4e)
 ```
 	--> Usage--> Only build jobs with label expressions matching this node
 	--> Connect method--> Connect with SSH--> SSH key--> use configured SSH credentials
 ```
-![alt text](image-26.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/33d93291-3e36-4586-835a-05994100fbed)
 ```
 	--> SSH Credentials--> SSH Credentials(select jenkins-agent credentials ID)
 	-->Host Key Verification Strategy-->Non verifying strategy-->save.
 ```
-![alt text](image-27.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/293b5cf0-0270-4c29-a55a-8ddd894466b5)
 
 ### Step 15: Build your pipeline with appropriate choices.
-![alt text](image-28.png)
-![alt text](image-29.png)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/28ae5d25-1a3c-43c3-bd28-cf9831f7c1c2)
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/69e1d68a-0c1f-4e2d-93c6-86801e148eee)
 
 
 ## If you found this repo useful, give it a STAR 🌠
