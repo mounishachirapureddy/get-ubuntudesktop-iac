@@ -3,7 +3,6 @@
   command: apt update
   when: operation == 'apply'
     
-    # Handlers Section
 - name: Install apache2
   become: yes
   apt: 
