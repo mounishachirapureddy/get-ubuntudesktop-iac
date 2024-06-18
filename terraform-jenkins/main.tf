@@ -5,7 +5,7 @@ provider "google" {
 terraform {
   backend "gcs" {
     bucket  = "sumanth-state-backup-bucket"
-    prefix  = "terraform/state"
+    prefix  = "terraform-infra/state"
   }
 }
 
