@@ -38,10 +38,23 @@ pipeline {
                 '''
             }
         }
-        stage('tfm-action') {
+        stage('tfm-apply') {
             when {
                 expression {
-                    return tfm_action == 'apply' || tfm_action == 'destroy'
+                    return tfm_action == 'apply'
+                }
+            }
+            steps {
+                sh '''
+                cd /var/lib/jenkins/workspace/desktop/terraform-desktop
+                terraform $tfm_action --auto-approve
+                '''
+            }
+        }
+        stage('tfm-destroy') {
+            when {
+                expression {
+                    return tfm_action == 'destroy'
                 }
             }
             steps {
@@ -61,7 +74,7 @@ pipeline {
                 sh 'cat ./ansible/ansible.cfg | sudo tee /etc/ansible/ansible.cfg'
             }
         }
-        stage('Copy GCP Credentials to Slave Agent') {
+        stage('Copy svc_credentials') {
             when {
                 expression {
                     return tfm_action == 'ansible'
