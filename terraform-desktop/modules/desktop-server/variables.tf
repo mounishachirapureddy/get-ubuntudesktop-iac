@@ -3,6 +3,11 @@ type = string
 default = "n2-standard-2"
 }
 
+variable "machine_type_apache" {
+type = string
+default = "e2-medium"
+}
+
 variable "name" {
 type = string
 default = "desktop-server"
