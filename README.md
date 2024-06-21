@@ -102,6 +102,10 @@ docker push username/repo_name
 
 ![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/1ecbd237-7c24-453a-a579-84d9c82bf95f)
 
+>Make Sure to keep your pipeline name what you mentioned in /var/lib/jenkins/workspace/**Your-Pipeline-Name**
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/6dd6be29-bfe2-4439-b2f3-dcf4a250890a)
+
+
 ### Step 7: Connect to jenkins VM-instance SSH – Terminal & get Jenkins UI Password.
 ```
 cat /var/lib/jenkins/secrets/initialAdminPassword
