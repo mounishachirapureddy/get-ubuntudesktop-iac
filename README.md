@@ -100,6 +100,7 @@ docker push username/repo_name
 > Make sure to change necessary sections like **Project-ID**, **Backup-bucket-name** & **Source Path** in the **main.tf** file 
   with your details.
 
+![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/3688afc9-4114-482e-8871-dd4ec1f89ab7)
 ![image](https://github.com/bpurnachander/get-ubuntudesktop-iac/assets/60452355/1ecbd237-7c24-453a-a579-84d9c82bf95f)
 
 > [!IMPORTANT] 
