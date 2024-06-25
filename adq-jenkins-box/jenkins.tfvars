@@ -1,0 +1,12 @@
+project_id			= "saravana95"
+get_jenkins_name		= "adq-jenkins-box"
+get_jenkins_machine_type	= "n2-standard-4"
+get_jenkins_zone		= "us-central1-a"
+get_jenkins_image		= "ubuntu-os-cloud/ubuntu-2004-lts"
+get_jenkins_boot_size		= "20"	
+get_jenkins_network_tag		= "jenkins-server"
+network  			= "get-dev-network"
+subnetwork  			= "get-dev-subnet"
+svc_email   			= "adq-dev-svc@gcp-adq-pocproject-dev.iam.gserviceaccount.com"
+jenkins_box_firewall_name	= "jenkins-box-firewall"
+

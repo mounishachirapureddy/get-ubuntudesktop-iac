@@ -1,19 +1,16 @@
-resource "google_service_account" "custom_service_account" {
-  account_id   = "custom-svc"
-  display_name = "custom-svc"
+resource "google_service_account" "get_svc" {
+  account_id   = var.get_svc_id
+  display_name = var.get_svc_name
   project      = var.project_id
 }
 
-resource "google_project_iam_binding" "service_account_role_bindings" {
+resource "google_project_iam_binding" "get_svc_role_bindings" {
   count   = length(var.roles)
   project = var.project_id
   role    = var.roles[count.index]
   
   members = [
-    "serviceAccount:${google_service_account.custom_service_account.email}"
+    "serviceAccount:${google_service_account.get_svc.email}"
   ]
 }
 
-output "svc_email" {
-  value = google_service_account.custom_service_account.email
-}

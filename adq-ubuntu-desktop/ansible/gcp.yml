@@ -1,0 +1,9 @@
+---
+plugin: gcp_compute
+projects:
+        - saravana95
+auth_kind: serviceaccount
+service_account_file: /root/PROJECT-01/adq-ubuntu-desktop/ansible/service-account.json
+groups:
+  tomcat: "'tomcat' in name"
+  apache2: "'apache2' in name"
