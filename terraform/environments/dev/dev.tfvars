@@ -1,4 +1,4 @@
-project_id        = "saravana95"
+project_id        = "gcp-adq-pocproject-dev"
 network_name      = "get-dev-network"
 subnet01_name     = "get-dev-subnet"
 subnet01_region   = "us-central1"
