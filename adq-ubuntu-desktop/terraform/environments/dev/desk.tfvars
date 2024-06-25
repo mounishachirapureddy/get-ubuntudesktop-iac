@@ -1,4 +1,4 @@
-project_id				= "saravana95"
+project_id				= "gcp-adq-pocproject-dev"
 desktop_server_name 			= "get-ubuntu-server"
 get_desktop_machine_type		= "n2-standard-2"
 get_desktop_zone			= "us-central1-b"
