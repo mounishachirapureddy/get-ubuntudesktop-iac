@@ -1,4 +1,4 @@
-project_id			= "saravana95"
+project_id			= "gcp-adq-pocproject-dev"
 get_jenkins_name		= "adq-jenkins-box"
 get_jenkins_machine_type	= "n2-standard-4"
 get_jenkins_zone		= "us-central1-a"
