@@ -140,7 +140,7 @@ pipeline {
         stage('Playbook-apply'){
              when {
                 expression {
-                    return tfm_action in ['---', 'skip', 'apply'] && ansible_action == 'apply'
+                    return tfm_action in ['---', 'skip', 'apply'] && ansible_action == 'apply' && upgrade_software == '---'
                 }
             }
             steps {
@@ -162,6 +162,29 @@ pipeline {
                 sh '''
                 ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=destroy" adq-ubuntu-desktop/ansible/master.yaml
                 '''
+            }
+        }
+        stage('Upgrade tomcat Version') {
+             when {
+                expression {
+                    return upgrade_software == 'tomcat'
+                }
+            }
+            steps {
+                script {
+                    def oldVersions = sh(script: "ansible ${ansible_hosts} -m shell -a 'cd /opt/tomcat && ls | grep apache-tomcat'", returnStdout: true).trim()
+                    
+                    if (oldVersions) {
+                        def userInput = input message: "Old Tomcat versions are ${oldVersions}\nDo you want to upgrade your tomcat version to $tomcat_version", ok: 'Yes'
+                        
+                        sh '''
+                        ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=apply" adq-ubuntu-desktop/ansible/master.yaml
+                        '''
+                    } else {
+                        echo "No old Tomcat versions found."
+                
+                    }
+                }
             }
         }
     }
