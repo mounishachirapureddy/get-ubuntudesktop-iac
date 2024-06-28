@@ -27,7 +27,7 @@ parameter: ansible_action
 
 parameters for software:
 parameter: software
-  * ---
+  * all
   * desktop
   * tomcat
   * python
@@ -35,25 +35,26 @@ parameter: software
 
 parameters for software_versions:
 parameter: python_version
-  * ---
   * 3
 
 parameter: java_version
-  * ---
-  * 8
   * 11
   * 17
+  * 8
 
 parameter: tomcat_base_version
   * 9
   * 10
 
 parameter: tomcat_version
-  * ---
   * 9.0.89
   * 9.0.90
   * 10.1.24
   * 10.1.25
+
+parameter: upgrade_software
+  * tomcat
+
 
 ansible command:
 ---
