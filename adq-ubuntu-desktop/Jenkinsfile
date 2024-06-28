@@ -1,0 +1,168 @@
+pipeline {
+    agent {
+        label 'docker'
+    }
+    environment {
+        GCP_CREDENTIALS = credentials('svc-json')
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', credentialsId: 'sumanth', url: 'https://github.com/summu97/PROJECT-001.git'
+            }
+        }
+        stage('tfm_init') {
+            when {
+                expression {
+                    return tfm_action in ['init', 'plan', 'apply', 'destroy']
+                }
+            }
+            steps {
+                sh '''
+                cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
+                terraform init
+                '''
+            }
+        }
+        stage('tfm_plan') {
+            when {
+                expression {
+                    return tfm_action == 'plan'
+                }
+            }
+            steps {
+                script  {
+                    if (tfm_action == 'skip') {
+                        error('Stage aborted because tfm_action is skip')
+                    } else {
+                        sh '''
+                        cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
+                        terraform plan --var-file="terraform.tfvars"
+                        '''
+                    }
+                }
+            }
+        }
+        stage('Check Existing Resources') {
+            when {
+                expression {
+                    return tfm_action == 'apply'
+                }
+            }
+            steps {
+                script {
+                    def tfState = sh(script: '''
+                        cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
+                        terraform state list
+                    ''', returnStdout: true).trim()
+
+                    if (tfState) {
+                        echo 'Existing Terraform state found.'
+                        env.TF_STATE_EXISTS = 'true'
+                    } else {
+                        echo 'No existing Terraform state found.'
+                        env.TF_STATE_EXISTS = 'false'
+                    }
+                    echo "TF_STATE_EXISTS: ${env.TF_STATE_EXISTS}"
+                }
+            }
+        }
+        stage('tfm_apply') {
+            when {
+                expression {
+                    return tfm_action == 'apply' && env.TF_STATE_EXISTS == 'false'
+                }
+            }
+            steps {
+                sh '''
+                cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
+                terraform apply --auto-approve --var-file="terraform.tfvars"
+                '''
+            }
+        }
+        stage('tfm_destroy') {
+            when {
+                expression {
+                    return tfm_action == 'destroy'
+                }
+            }
+            steps {
+                script {
+                    input message: 'Are you sure you want to destroy the infrastructure?', ok: 'Yes'
+                }
+                sh '''
+                cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
+                terraform destroy --auto-approve --var-file="terraform.tfvars"
+                '''
+            }
+        }
+        stage('Recreate_infra') {
+            when {
+                expression {
+                    return env.TF_STATE_EXISTS == 'true'
+                }
+            }
+            steps {
+                script {
+                    input message: 'Are you sure you want to recreate the infrastructure?', ok: 'Yes'
+                }
+                sh '''
+                cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
+                terraform apply --auto-approve --var-file="terraform.tfvars"
+                '''
+            }
+        }
+        stage('Get credentials') {
+            when {
+                expression {
+                    return tfm_action in ['---', 'skip', 'apply']
+                }
+            }
+            steps {
+                script {
+                    if (ansible_action == 'skip') {
+                        echo 'Stage skipped because ansible_action is skip'
+                        return
+                    } else {
+                        // Define the path where the GCP credentials will be copied on the slave agent
+                        def destPath = '/var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/service-account.json'
+
+                        // Write the secret file to the destination path on the slave agent
+                        writeFile file: destPath, text: new String(readFile(env.GCP_CREDENTIALS).bytes)
+                    
+                        sh '''
+                        sudo cp /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/ansible.cfg /etc/ansible/ansible.cfg
+                        '''
+                    }
+                }
+            }
+        }
+        stage('Playbook-apply'){
+             when {
+                expression {
+                    return tfm_action in ['---', 'skip', 'apply'] && ansible_action == 'apply'
+                }
+            }
+            steps {
+                sleep(time: 30, unit: 'SECONDS')
+                
+                sh '''
+                ansible-inventory --graph
+                ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=apply" adq-ubuntu-desktop/ansible/master.yaml
+                '''
+            }
+        }
+        stage('Playbook-destroy'){
+             when {
+                expression {
+                    return tfm_action in ['---', 'skip'] && ansible_action == 'destroy'
+                }
+            }
+            steps {
+                sh '''
+                ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=destroy" adq-ubuntu-desktop/ansible/master.yaml
+                '''
+            }
+        }
+    }
+}
