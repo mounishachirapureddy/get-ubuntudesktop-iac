@@ -1,5 +1,5 @@
 project_id				= "gcp-adq-pocproject-dev"
-desktop_server_name 			= "get-ubuntu-server"
+desktop_server_name 			= "get-desktop-server"
 get_desktop_machine_type		= "n2-standard-2"
 get_desktop_zone			= "us-central1-b"
 get_desktop_image			= "ubuntu-os-pro-cloud/ubuntu-pro-2004-lts"
