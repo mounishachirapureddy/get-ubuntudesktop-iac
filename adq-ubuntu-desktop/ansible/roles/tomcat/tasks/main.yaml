@@ -1,0 +1,24 @@
+---
+- name: Update package
+  command: apt update
+  when: operation == 'apply'
+  notify: 
+    - Install Java
+    - Create Tomcat group
+    - Create Tomcat user
+    - Create Tomcat directory & change ownership to directory
+    - Download Tomcat
+    - Extract Tomcat
+    - Update permissions
+    - Create systemd service file for Tomcat
+    - Reload systemd daemon
+    - Configure tomcat-users.xml
+    - Configure context.xml
+    - Ensure tomcat-users.xml permissions
+    - Enable and start Tomcat
+
+- name: Deleting packages
+  command: echo "Deleting packages"
+  when: operation == 'destroy'
+  notify:
+    - Delete tomcat
