@@ -27,7 +27,7 @@ pipeline {
         stage('tfm_plan') {
             when {
                 expression {
-                    return tfm_action == 'plan'
+                    return tfm_action in ['plan', 'apply']
                 }
             }
             steps {
