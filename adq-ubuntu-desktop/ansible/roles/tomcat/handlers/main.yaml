@@ -1,0 +1,98 @@
+---
+- name: Install Java
+  apt:
+    name: openjdk-11-jdk
+    state: present
+
+- name: Create Tomcat group
+  group:
+    name: tomcat
+    state: present 
+
+- name: Create Tomcat user
+  user:
+    name: tomcat
+    group: tomcat
+    home: /opt/tomcat
+    shell: /bin/false
+    state: present
+
+- name: Create Tomcat directory & change ownership to directory
+  command: sudo mkdir -p /opt/tomcat && sudo chown tomcat:tomcat /opt/tomcat
+
+- name: Download Tomcat
+  get_url:
+    url: https://dlcdn.apache.org/tomcat/tomcat-{{ tomcat_base_version }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz
+    dest: /root/apache-tomcat-{{ tomcat_version }}.tar.gz
+
+- name: Extract Tomcat
+  command: tar -zxvf /root/apache-tomcat-{{ tomcat_version }}.tar.gz -C /opt/tomcat
+
+- name: Update permissions
+  command: sudo chown -R tomcat:tomcat /opt/tomcat/apache-tomcat-{{ tomcat_version }}
+
+- name: Create systemd service file for Tomcat
+  copy:
+    dest: /etc/systemd/system/tomcat.service
+    content: |
+      [Unit]
+      Description=Apache Tomcat Web Application Container
+      After=network.target
+
+      [Service]
+      Type=forking
+
+      Environment=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+      Environment=CATALINA_PID=/opt/tomcat/apache-tomcat-{{ tomcat_version }}/temp/tomcat.pid
+      Environment=CATALINA_HOME=/opt/tomcat/apache-tomcat-{{ tomcat_version }}
+      Environment=CATALINA_BASE=/opt/tomcat/apache-tomcat-{{ tomcat_version }}
+      Environment='CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC'
+      Environment='JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom'
+
+      ExecStart=/opt/tomcat/apache-tomcat-{{ tomcat_version }}/bin/startup.sh
+      ExecStop=/opt/tomcat/apache-tomcat-{{ tomcat_version }}/bin/shutdown.sh
+
+      User=tomcat
+      Group=tomcat
+      UMask=0007
+      RestartSec=10
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Configure tomcat-users.xml
+  copy:
+    dest: /opt/tomcat/apache-tomcat-{{ tomcat_version }}/conf/tomcat-users.xml
+    content: |
+      <tomcat-users>
+          <role rolename="manager-gui"/>
+          <role rolename="admin-gui"/>
+          <role rolename="admin-script"/>
+          <role rolename="manager-script"/>
+          <user username="admin" password="tomcat" roles="manager-gui,admin-gui,admin-script,manager-script"/>
+      </tomcat-users>
+
+- name: Configure context.xml
+  shell: |
+    sed -i '21d' /opt/tomcat/apache-tomcat-{{ tomcat_version }}/webapps/manager/META-INF/context.xml
+    sed -i '21d' /opt/tomcat/apache-tomcat-{{ tomcat_version }}/webapps/manager/META-INF/context.xml
+
+- name: Ensure tomcat-users.xml permissions
+  file:
+    path: /opt/tomcat/apache-tomcat-{{ tomcat_version }}/conf/tomcat-users.xml
+    owner: tomcat
+    group: tomcat
+    mode: '0640'
+
+- name: Enable and start Tomcat
+  shell: |
+    sudo systemctl daemon-reload
+    sudo systemctl restart tomcat
+
+- name: Delete tomcat
+  command: rm -rf /opt/tomcat/apache-tomcat-{{ tomcat_version }}
