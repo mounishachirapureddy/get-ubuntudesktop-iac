@@ -20,8 +20,5 @@
   when: operation == 'apply'
 
 - name: Uninstall Notepad++ snap package
-  snap:
-    name: notepad-plus-plus
-    classic: yes
-    state: absent
+  command: rm -rf /root/snap/notepad-plus-plus
   when: operation == 'destroy'
