@@ -1,0 +1,19 @@
+---
+- name: Update package
+  command: apt update
+  become: yes
+  when: operation == "apply"
+
+- name: Install Java{{ java_version }}
+  apt:
+    name: openjdk-{{ java_version }}-jdk
+    state: present
+  become: yes
+  when: operation == "apply"
+
+- name: Uninstall Java{{ java_version }}
+  apt:
+    name: openjdk-{{ java_version }}-jdk
+    state: absent
+  become: yes
+  when: operation == "destroy"
