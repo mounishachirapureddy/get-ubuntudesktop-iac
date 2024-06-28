@@ -5,7 +5,7 @@ projects:
 auth_kind: serviceaccount
 service_account_file: /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/service-account.json
 groups:
-  ubuntudesktop: "'desktop' in name"
+  ubuntudesktop: "'ubuntu' in name"
   tomcat: "'tomcat' in name"
   apache2: "'apache2' in name"
 compose:
