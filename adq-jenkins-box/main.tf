@@ -10,7 +10,7 @@ terraform {
 }
 
 module "adq-jenkins-box" {
-source = "/root/PROJECT-01/adq-jenkins-box/modules/adq-jenkins-box"
+source = "/root/get-ubuntudesktop-iac/adq-jenkins-box/modules/adq-jenkins-box"
 
 get_jenkins_name                = var.get_jenkins_name
 get_jenkins_machine_type        = var.get_jenkins_machine_type
