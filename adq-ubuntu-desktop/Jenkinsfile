@@ -11,6 +11,31 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/bpurnachander/get-ubuntudesktop-iac.git'
             }
         }
+        stage('Get credentials') {
+            when {
+                expression {
+                    return tfm_action in ['---', 'skip', 'apply']
+                }
+            }
+            steps {
+                script {
+                    if (ansible_action == 'skip') {
+                        echo 'Stage skipped because ansible_action is skip'
+                        return
+                    } else {
+                        // Define the path where the GCP credentials will be copied on the slave agent
+                        def destPath = '/var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/service-account.json'
+
+                        // Write the secret file to the destination path on the slave agent
+                        writeFile file: destPath, text: new String(readFile(env.GCP_CREDENTIALS).bytes)
+                    
+                        sh '''
+                        sudo cp /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/ansible.cfg /etc/ansible/ansible.cfg
+                        '''
+                    }
+                }
+            }
+        }
         stage('tfm_init') {
             when {
                 expression {
@@ -110,31 +135,6 @@ pipeline {
                 cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
                 terraform apply --auto-approve --var-file="terraform.tfvars"
                 '''
-            }
-        }
-        stage('Get credentials') {
-            when {
-                expression {
-                    return tfm_action in ['---', 'skip', 'apply']
-                }
-            }
-            steps {
-                script {
-                    if (ansible_action == 'skip') {
-                        echo 'Stage skipped because ansible_action is skip'
-                        return
-                    } else {
-                        // Define the path where the GCP credentials will be copied on the slave agent
-                        def destPath = '/var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/service-account.json'
-
-                        // Write the secret file to the destination path on the slave agent
-                        writeFile file: destPath, text: new String(readFile(env.GCP_CREDENTIALS).bytes)
-                    
-                        sh '''
-                        sudo cp /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/ansible.cfg /etc/ansible/ansible.cfg
-                        '''
-                    }
-                }
             }
         }
         stage('Playbook-apply'){
