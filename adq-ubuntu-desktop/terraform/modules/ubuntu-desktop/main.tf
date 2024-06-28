@@ -37,7 +37,7 @@ resource "google_compute_instance" "desktop-server" {
 
   tags = [var.get_desktop_network_tag]		
 
-#  metadata = {
-#    ssh-keys = "root:${file("/var/lib/jenkins/.ssh/id_rsa.pub")}"
-#  }
+  metadata = {
+    ssh-keys = "root:${file("/var/lib/jenkins/.ssh/id_rsa.pub")}"
+  }
 }
