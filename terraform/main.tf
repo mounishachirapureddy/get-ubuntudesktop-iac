@@ -13,7 +13,7 @@ provider "google" {
 }
 
 module "networking" {
-  source    = "/root/PROJECT-01/terraform/modules/networking"
+  source    = "/root/get-ubuntudesktop-iac/terraform/modules/networking"
 
   network_name            = var.network_name
   subnet01_name           = var.subnet01_name
@@ -29,7 +29,7 @@ module "networking" {
 }
 
 module "service-account" {
-  source    = "/root/PROJECT-01/terraform/modules/service-account"
+  source    = "/root/get-ubuntudesktop-iac/terraform/modules/service-account"
 
   project_id              = var.project_id
   get_svc_id		  = var.get_svc_id
