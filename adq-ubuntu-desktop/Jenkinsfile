@@ -29,9 +29,9 @@ pipeline {
                         // Write the secret file to the destination path on the slave agent
                         writeFile file: destPath, text: new String(readFile(env.GCP_CREDENTIALS).bytes)
                     
-                        sh '''
+                        sh """
                         sudo cp /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/ansible.cfg /etc/ansible/ansible.cfg
-                        '''
+                        """
                     }
                 }
             }
@@ -43,10 +43,10 @@ pipeline {
                 }
             }
             steps {
-                sh '''
+                sh """
                 cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
                 terraform init
-                '''
+                """
             }
         }
         stage('tfm_plan') {
@@ -60,10 +60,10 @@ pipeline {
                     if (tfm_action == 'skip') {
                         error('Stage aborted because tfm_action is skip')
                     } else {
-                        sh '''
+                        sh """
                         cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
                         terraform plan --var-file="terraform.tfvars"
-                        '''
+                        """
                     }
                 }
             }
@@ -99,10 +99,10 @@ pipeline {
                 }
             }
             steps {
-                sh '''
+                sh """
                 cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
                 terraform apply --auto-approve --var-file="terraform.tfvars"
-                '''
+                """
             }
         }
         stage('tfm_destroy') {
@@ -115,10 +115,10 @@ pipeline {
                 script {
                     input message: 'Are you sure you want to destroy the infrastructure?', ok: 'Yes'
                 }
-                sh '''
+                sh """
                 cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
                 terraform destroy --auto-approve --var-file="terraform.tfvars"
-                '''
+                """
             }
         }
         stage('Recreate_infra') {
@@ -131,10 +131,10 @@ pipeline {
                 script {
                     input message: 'Are you sure you want to recreate the infrastructure?', ok: 'Yes'
                 }
-                sh '''
+                sh """
                 cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
                 terraform apply --auto-approve --var-file="terraform.tfvars"
-                '''
+                """
             }
         }
         stage('Playbook-apply'){
@@ -144,12 +144,24 @@ pipeline {
                 }
             }
             steps {
-                sleep(time: 30, unit: 'SECONDS')
-                
-                sh '''
-                ansible-inventory --graph
-                ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=apply" adq-ubuntu-desktop/ansible/master.yaml
-                '''
+                script {
+                    def software_list = ['desktop', 'tomcat', 'python', 'java']
+                    if (software == 'all') {
+                        
+                        for (def software_name in software_list) {
+                            echo "Executing Ansible playbook for ${software_name}"
+                            sh """
+                            ansible-playbook -e "ansible_hosts=$ansible_hosts software=${software_name} python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=apply" adq-ubuntu-desktop/ansible/master.yaml
+                            """
+                        }
+                    } else {
+                        
+                        sleep(time: 30, unit: 'SECONDS')
+                        sh """
+                        ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=apply" adq-ubuntu-desktop/ansible/master.yaml
+                        """
+                    }
+                }
             }
         }
         stage('Playbook-destroy'){
@@ -159,9 +171,9 @@ pipeline {
                 }
             }
             steps {
-                sh '''
+                sh """
                 ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=destroy" adq-ubuntu-desktop/ansible/master.yaml
-                '''
+                """
             }
         }
         stage('Upgrade tomcat Version') {
@@ -177,9 +189,9 @@ pipeline {
                     if (oldVersions) {
                         def userInput = input message: "Old Tomcat versions are ${oldVersions}\nDo you want to upgrade your tomcat version to $tomcat_version", ok: 'Yes'
                         
-                        sh '''
+                        sh """
                         ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=apply" adq-ubuntu-desktop/ansible/master.yaml
-                        '''
+                        """
                     } else {
                         echo "No old Tomcat versions found."
                 
