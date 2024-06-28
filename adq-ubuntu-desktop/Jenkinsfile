@@ -145,11 +145,11 @@ pipeline {
             }
             steps {
                 script {
-                    def software_list = ['desktop', 'tomcat', 'python', 'java']
+                    def software_list = ['desktop', 'tomcat', 'python', 'java', 'notepad++']
                     if (software == 'all') {
                         
                         for (def software_name in software_list) {
-                            echo "Executing Ansible playbook for ${software_name}"
+                            echo "Applying software ${software_name}"
                             sh """
                             ansible-playbook -e "ansible_hosts=$ansible_hosts software=${software_name} python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=apply" adq-ubuntu-desktop/ansible/master.yaml
                             """
@@ -171,9 +171,22 @@ pipeline {
                 }
             }
             steps {
-                sh """
-                ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=destroy" adq-ubuntu-desktop/ansible/master.yaml
-                """
+                script {
+                    def software_list = ['desktop', 'tomcat', 'python', 'java', 'notepad++']
+                    if (software == 'all') {
+                        
+                        for (def software_name in software_list) {
+                            echo "Destrying software ${software_name}"
+                            sh """
+                            ansible-playbook -e "ansible_hosts=$ansible_hosts software=${software_name} python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=destroy" adq-ubuntu-desktop/ansible/master.yaml
+                            """
+                        }
+                    } else {
+                        sh """
+                        ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=destroy" adq-ubuntu-desktop/ansible/master.yaml
+                        """
+                    }
+                }
             }
         }
         stage('Upgrade tomcat Version') {
