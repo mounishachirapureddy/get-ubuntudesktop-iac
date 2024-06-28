@@ -30,6 +30,7 @@ parameter: software
   * all
   * desktop
   * tomcat
+  * notepad++
   * python
   * java
 
