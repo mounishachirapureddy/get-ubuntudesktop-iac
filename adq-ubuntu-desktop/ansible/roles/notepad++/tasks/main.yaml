@@ -1,11 +1,11 @@
 ---
-- name: Ensure snapd is installed
+- name: Install snapd
   apt:
     name: snapd
     state: present
   when: operation == 'apply'
  
-- name: Ensure snapd is running and enabled
+- name: Run and enable snapd
   systemd:
     name: snapd
     state: started
@@ -18,3 +18,10 @@
     classic: yes
     state: present
   when: operation == 'apply'
+
+- name: Uninstall Notepad++ snap package
+  snap:
+    name: notepad-plus-plus
+    classic: yes
+    state: absent
+  when: operation == 'destroy'
