@@ -1,0 +1,20 @@
+---
+- name: Ensure snapd is installed
+  apt:
+    name: snapd
+    state: present
+  when: operation == 'apply'
+ 
+- name: Ensure snapd is running and enabled
+  systemd:
+    name: snapd
+    state: started
+    enabled: yes
+  when: operation == 'apply'
+ 
+- name: Install Notepad++ snap package
+  snap:
+    name: notepad-plus-plus
+    classic: yes
+    state: present
+  when: operation == 'apply'
