@@ -21,7 +21,6 @@ pipeline {
                 script {
                     if (ansible_action == 'skip') {
                         echo 'Stage skipped because ansible_action is skip'
-                        return
                     } else {
                         // Define the path where the GCP credentials will be copied on the slave agent
                         def destPath = '/var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/service-account.json'
@@ -76,10 +75,10 @@ pipeline {
             }
             steps {
                 script {
-                    def tfState = sh(script: '''
+                    def tfState = sh(script: """
                         cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
                         terraform state list
-                    ''', returnStdout: true).trim()
+                    """, returnStdout: true).trim()
 
                     if (tfState) {
                         echo 'Existing Terraform state found.'
@@ -145,6 +144,7 @@ pipeline {
             }
             steps {
                 script {
+                    sleep(time: 30, unit: 'SECONDS')
                     def software_list = ['desktop', 'tomcat', 'python', 'java', 'notepad++']
                     if (software == 'all') {
                         
@@ -156,8 +156,8 @@ pipeline {
                         }
                     } else {
                         
-                        sleep(time: 30, unit: 'SECONDS')
                         sh """
+                        echo "Applying software ${software}"
                         ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=apply" adq-ubuntu-desktop/ansible/master.yaml
                         """
                     }
@@ -176,13 +176,14 @@ pipeline {
                     if (software == 'all') {
                         
                         for (def software_name in software_list) {
-                            echo "Destrying software ${software_name}"
+                            echo "Destroying software ${software_name}"
                             sh """
                             ansible-playbook -e "ansible_hosts=$ansible_hosts software=${software_name} python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=destroy" adq-ubuntu-desktop/ansible/master.yaml
                             """
                         }
                     } else {
                         sh """
+                        echo "Destroying software ${software}"
                         ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=destroy" adq-ubuntu-desktop/ansible/master.yaml
                         """
                     }
