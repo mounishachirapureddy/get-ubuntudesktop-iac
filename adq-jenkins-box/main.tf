@@ -24,4 +24,5 @@ subnetwork			                = var.subnetwork
 svc_email   			              = var.svc_email
 jenkins_box_firewall_name	      = var.jenkins_box_firewall_name
 jenkins_box_static_ip_name      = var.jenkins_box_static_ip_name
+project_region                  = var.project_region
 }
