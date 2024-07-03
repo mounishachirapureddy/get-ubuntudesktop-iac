@@ -1,4 +1,5 @@
 project_id			= "gcp-adq-pocproject-dev"
+project_region                  = "us-central1"
 get_jenkins_name		= "adq-jenkins-box"
 get_jenkins_machine_type	= "n2-standard-4"
 get_jenkins_zone		= "us-central1-a"
@@ -9,4 +10,4 @@ network  			= "get-dev-network"
 subnetwork  			= "get-dev-subnet"
 svc_email   			= "adq-dev-svc@gcp-adq-pocproject-dev.iam.gserviceaccount.com"
 jenkins_box_firewall_name	= "jenkins-box-firewall"
-
+jenkins_box_static_ip_name      = "jenkins-box-static-ip"
