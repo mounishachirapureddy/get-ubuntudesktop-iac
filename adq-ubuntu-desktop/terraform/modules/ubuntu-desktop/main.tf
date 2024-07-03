@@ -22,7 +22,7 @@ resource "google_compute_instance" "desktop-server" {
     subnetwork = var.subnetwork
 
     access_config {
-      // Ephemeral IP
+      nat_ip = var.ubuntudesktop_static_ip
     }
   }
 
