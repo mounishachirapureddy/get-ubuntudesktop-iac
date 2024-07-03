@@ -1,3 +1,10 @@
+resource "google_compute_address" "jenkins_box_static_ip" {
+  name         = var.jenkins_box_static_ip_name 
+  address_type = "EXTERNAL"
+  network_tier = "PREMIUM"
+  region      = var.project_region
+}
+
 resource "google_compute_instance" "get_jenkins_box" {
   name         = var.get_jenkins_name
   machine_type = var.get_jenkins_machine_type
