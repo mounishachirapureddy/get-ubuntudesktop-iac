@@ -9,17 +9,17 @@ variable "get_desktop_machine_type" {
 }
 
 variable "get_desktop_zone" {
-  description = "get_jenkins_zone."
+  description = "get_desktop_zone."
   type        = string
 }
 
 variable "get_desktop_image" {
-  description = "get_jenkins_image."
+  description = "get_desktop_image."
   type        = string
 }
 
 variable "get_desktop_boot_size" {
-  description = "get_jenkins_boot_size."
+  description = "get_desktop_boot_size."
   type        = number
 }
 
