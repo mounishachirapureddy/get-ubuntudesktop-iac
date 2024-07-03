@@ -48,3 +48,13 @@ variable "firewall03_network_tags" {
   description = "The network tags for the third firewall rule."
   type        = string
 }
+
+variable "get_ubuntudesktop_static_ip_name" {
+  description = "get_ubuntudesktop_static_ip_name."
+  type        = string
+}
+
+variable "project_region" {
+  description = "project_region."
+  type        = string
+}
