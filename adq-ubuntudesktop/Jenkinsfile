@@ -3,7 +3,9 @@ pipeline {
         label 'docker'
     }
     environment {
-        GCP_CREDENTIALS = credentials('svc-json-key')
+        ENV = 'dev'
+        
+        // GCP_CREDENTIALS = credentials('project-dev-svc-json')
     }
     stages {
         stage('Checkout') {
@@ -11,205 +13,111 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/bpurnachander/get-ubuntudesktop-iac.git'
             }
         }
-        stage('Get credentials') {
-            when {
-                expression {
-                    return tfm_action in ['---', 'skip', 'apply']
-                }
-            }
-            steps {
-                script {
-                    if (ansible_action == 'skip') {
-                        echo 'Stage skipped because ansible_action is skip'
-                    } else {
-                        // Define the path where the GCP credentials will be copied on the slave agent
-                        def destPath = '/var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/service-account.json'
+        // stage('Get credentials') {
+        //     when {
+        //         expression {
+        //             return terraform in ['skip', 'apply']
+        //         }
+        //     }
+        //     steps {
+        //         script {
+        //             if (ansible_action == 'skip') {
+        //                 echo 'Stage skipped because ansible_action is skip'
+        //             } else {
+        //                 // Define the path where the GCP credentials will be copied on the agent
+        //                 def destPath = '/var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/service-account.json'
 
-                        // Write the secret file to the destination path on the slave agent
-                        writeFile file: destPath, text: new String(readFile(env.GCP_CREDENTIALS).bytes)
+        //                 // Write the secret file to the destination path on the agent
+        //                 writeFile file: destPath, text: new String(readFile(env.GCP_CREDENTIALS).bytes)
+
+        //                 sh """
+        //                 sudo cp /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/ansible.cfg /etc/ansible/ansible.cfg
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
+        stage('terraform_plan') {
+            when {
+                expression {
+                    return terraform in ['plan', 'apply']
+                }
+            }
+            steps {
+                dir("./adq-ubuntudesktop/terraform/environments/${ENV}") {
                     
-                        sh """
-                        sudo cp /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/ansible.cfg /etc/ansible/ansible.cfg
-                        """
-                    }
+                    sh """
+                    
+                    terraform init
+                    terraform plan --var-file="terraform.tfvars"
+                    
+                    """
                 }
             }
         }
-        stage('tfm_init') {
+        stage('Check and Apply Terraform') {
             when {
                 expression {
-                    return tfm_action in ['init', 'plan', 'apply', 'destroy']
+                    return terraform == 'apply'
                 }
             }
             steps {
-                sh """
-                cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
-                terraform init
-                """
-            }
-        }
-        stage('tfm_plan') {
-            when {
-                expression {
-                    return tfm_action in ['plan', 'apply']
-                }
-            }
-            steps {
-                script  {
-                    if (tfm_action == 'skip') {
-                        error('Stage aborted because tfm_action is skip')
-                    } else {
-                        sh """
-                        cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
-                        terraform plan --var-file="terraform.tfvars"
-                        """
-                    }
-                }
-            }
-        }
-        stage('Check Existing Resources') {
-            when {
-                expression {
-                    return tfm_action == 'apply'
-                }
-            }
-            steps {
-                script {
-                    def tfState = sh(script: """
-                        cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
-                        terraform state list
+                dir("./adq-ubuntudesktop/terraform/environments/${ENV}") {
+                    script {
+                        def tfState = sh(script: """
+                            terraform state list
                     """, returnStdout: true).trim()
 
-                    if (tfState) {
-                        echo 'Existing Terraform state found.'
-                        env.TF_STATE_EXISTS = 'true'
-                    } else {
-                        echo 'No existing Terraform state found.'
-                        env.TF_STATE_EXISTS = 'false'
-                    }
-                    echo "TF_STATE_EXISTS: ${env.TF_STATE_EXISTS}"
-                }
-            }
-        }
-        stage('tfm_apply') {
-            when {
-                expression {
-                    return tfm_action == 'apply' && env.TF_STATE_EXISTS == 'false'
-                }
-            }
-            steps {
-                sh """
-                cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
-                terraform apply --auto-approve --var-file="terraform.tfvars"
-                """
-            }
-        }
-        stage('tfm_destroy') {
-            when {
-                expression {
-                    return tfm_action == 'destroy'
-                }
-            }
-            steps {
-                script {
-                    input message: 'Are you sure you want to destroy the infrastructure?', ok: 'Yes'
-                }
-                sh """
-                cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
-                terraform destroy --auto-approve --var-file="terraform.tfvars"
-                """
-            }
-        }
-        stage('Recreate_infra') {
-            when {
-                expression {
-                    return env.TF_STATE_EXISTS == 'true'
-                }
-            }
-            steps {
-                script {
-                    input message: 'Are you sure you want to recreate the infrastructure?', ok: 'Yes'
-                }
-                sh """
-                cd /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/environments/$ENV
-                terraform apply --auto-approve --var-file="terraform.tfvars"
-                """
-            }
-        }
-        stage('Playbook-apply'){
-             when {
-                expression {
-                    return tfm_action in ['---', 'skip', 'apply'] && ansible_action == 'apply' && upgrade_software == '---'
-                }
-            }
-            steps {
-                script {
-                    sleep(time: 30, unit: 'SECONDS')
-                    def software_list = ['desktop', 'tomcat', 'python', 'java', 'notepad++']
-                    if (software == 'all') {
-                        
-                        for (def software_name in software_list) {
-                            echo "Applying software ${software_name}"
+                        if (tfState) {
+                            echo 'Existing Terraform state found.'
+                            def userInput = input message: 'Existing resources found. Do you want to recreate the infrastructure?', ok: 'Apply', parameters: [choice(name: 'Confirm', choices: 'yes\nno', description: 'Choose yes to recreate or no to abort')]
+
+                            if (userInput == 'yes') {
+                                
+                                sh """
+                                
+                                terraform init
+                                terraform apply --auto-approve --var-file="terraform.tfvars"
+                                
+                                """
+                            } else {
+                                echo 'Aborted by user.'
+                                currentBuild.result = 'ABORTED'
+                                error('User chose not to recreate infrastructure.')
+                            }
+                        } else {
+                            echo 'No existing resources found. Applying Terraform.'
+                            
                             sh """
-                            ansible-playbook -e "ansible_hosts=$ansible_hosts software=${software_name} python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=apply" adq-ubuntu-desktop/ansible/master.yaml
+                            
+                            terraform init
+                            terraform apply --auto-approve --var-file="terraform.tfvars"
+                            
                             """
                         }
-                    } else {
-                        
-                        sh """
-                        echo "Applying software ${software}"
-                        ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=apply" adq-ubuntu-desktop/ansible/master.yaml
-                        """
                     }
                 }
             }
         }
-        stage('Playbook-destroy'){
-             when {
+        stage('terraform_destroy') {
+            when {
                 expression {
-                    return tfm_action in ['---', 'skip'] && ansible_action == 'destroy'
+                    return terraform == 'destroy'
                 }
             }
             steps {
-                script {
-                    def software_list = ['desktop', 'tomcat', 'python', 'java', 'notepad++']
-                    if (software == 'all') {
-                        
-                        for (def software_name in software_list) {
-                            echo "Destroying software ${software_name}"
-                            sh """
-                            ansible-playbook -e "ansible_hosts=$ansible_hosts software=${software_name} python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=destroy" adq-ubuntu-desktop/ansible/master.yaml
-                            """
-                        }
-                    } else {
-                        sh """
-                        echo "Destroying software ${software}"
-                        ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=destroy" adq-ubuntu-desktop/ansible/master.yaml
-                        """
-                    }
-                }
-            }
-        }
-        stage('Upgrade tomcat Version') {
-             when {
-                expression {
-                    return upgrade_software == 'tomcat'
-                }
-            }
-            steps {
-                script {
-                    def oldVersions = sh(script: "ansible ${ansible_hosts} -m shell -a 'cd /opt/tomcat && ls | grep apache-tomcat'", returnStdout: true).trim()
+                dir("./adq-ubuntudesktop/terraform/environments/${ENV}") {
                     
-                    if (oldVersions) {
-                        def userInput = input message: "Old Tomcat versions are ${oldVersions}\nDo you want to upgrade your tomcat version to $tomcat_version", ok: 'Yes'
-                        
-                        sh """
-                        ansible-playbook -e "ansible_hosts=$ansible_hosts software=$software python_version=$python_version java_version=$java_version tomcat_base_version=$tomcat_base_version tomcat_version=$tomcat_version operation=apply" adq-ubuntu-desktop/ansible/master.yaml
-                        """
-                    } else {
-                        echo "No old Tomcat versions found."
-                
+                    script {
+                        input message: 'Are you sure you want to destroy the infrastructure?', ok: 'Yes'
                     }
+                    
+                    sh """
+                    
+                    terraform init
+                    terraform destroy --auto-approve --var-file="terraform.tfvars"
+                    
+                    """
                 }
             }
         }
