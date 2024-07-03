@@ -3,7 +3,7 @@ provider "google" {
 }
 
 module "ubuntu-desktop" {
-source = "/var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/terraform/modules/ubuntu-desktop"
+source = "/var/lib/jenkins/workspace/desktop/get-ubuntudesktop/terraform/modules/ubuntu-desktop"
 
 desktop_server_name 			= var.desktop_server_name
 get_desktop_machine_type		= var.get_desktop_machine_type
