@@ -3,6 +3,15 @@ variable "project_id" {
   type        = string
 }
 
+variable "get_ubuntudesktop_static_ip_name" {
+  description = "get_ubuntudesktop_static_ip_name."
+  type        = string
+}
+
+variable "project_region" {
+  description = "project_region."
+  type        = string
+}
 variable "network_name" {
   description = "The name of the network."
   type        = string
