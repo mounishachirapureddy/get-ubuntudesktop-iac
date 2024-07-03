@@ -47,3 +47,8 @@ variable "svc_email" {
   description = "svc_email."
   type        = string
 }
+
+variable "ubuntudesktop_static_ip" {
+  description = "ubuntudesktop_static_ip."
+  type        = string
+}
