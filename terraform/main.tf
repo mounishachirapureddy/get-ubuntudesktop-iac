@@ -25,16 +25,17 @@ module "networking" {
   firewall01_network_tags = var.firewall01_network_tags
   firewall02_network_tags = var.firewall02_network_tags
   firewall03_network_tags = var.firewall03_network_tags
-
+  project_region                          = var.project_region
+  get_ubuntudesktop_static_ip_name        = var.get_ubuntudesktop_static_ip_name
 }
 
 module "service-account" {
   source    = "/root/get-ubuntudesktop-iac/terraform/modules/service-account"
 
   project_id              = var.project_id
-  get_svc_id		  = var.get_svc_id
-  get_svc_name		  = var.get_svc_name
-  roles			  = var.roles
+  get_svc_id		          = var.get_svc_id
+  get_svc_name	      	  = var.get_svc_name
+  roles			              = var.roles
 
 }
 
