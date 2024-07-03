@@ -2,6 +2,13 @@ resource "google_project_service" "dns" {
   service = "dns.googleapis.com"
 }
 
+resource "google_compute_address" "get_ubuntudesktop_static_ip" {
+  name         = var.get_ubuntudesktop_static_ip_name
+  address_type = "EXTERNAL"
+  network_tier = "PREMIUM"
+  region       = var.project_region
+}
+
 resource "google_compute_network" "get_network" {
   name           = var.network_name
   auto_create_subnetworks = false
