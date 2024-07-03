@@ -29,7 +29,7 @@ resource "google_compute_instance" "get_jenkins_box" {
     subnetwork = var.subnetwork
 
     access_config {
-      // Ephemeral IP
+      nat_ip = google_compute_address.jenkins_box_static_ip.address
     }
   }
 
