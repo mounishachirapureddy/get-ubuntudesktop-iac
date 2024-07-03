@@ -3,7 +3,7 @@ pipeline {
         label 'docker'
     }
     environment {
-        GCP_CREDENTIALS = credentials('svc-json')
+        GCP_CREDENTIALS = credentials('svc-json-key')
     }
     stages {
         stage('Checkout') {
