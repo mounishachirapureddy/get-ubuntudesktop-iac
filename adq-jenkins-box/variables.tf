@@ -52,3 +52,13 @@ variable "jenkins_box_firewall_name" {
   description = "jenkins_box_firewall_name."
   type        = string
 }
+
+variable "project_region" {
+  description = "project_region."
+  type        = string
+}
+
+variable "jenkins_box_static_ip_name" {
+  description = "jenkins_box_static_ip_name."
+  type        = string
+}
