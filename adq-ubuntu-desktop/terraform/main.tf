@@ -14,5 +14,5 @@ network					= var.network
 subnetwork				= var.subnetwork
 svc_email				= var.svc_email
 get_desktop_network_tag			= var.get_desktop_network_tag
-
+ubuntudesktop_static_ip     = var.ubuntudesktop_static_ip
 }
