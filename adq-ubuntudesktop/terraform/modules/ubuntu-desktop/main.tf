@@ -27,7 +27,8 @@ resource "google_compute_instance" "desktop-server" {
   }
 
   labels = {
-    adq-ubuntudesktop
+    adq-ubuntudesktop = ""
+    desktop           = ""
   }
 
   service_account {
