@@ -8,7 +8,7 @@ resource "google_compute_instance" "desktop-server" {
       image = var.get_desktop_image
       size  = var.get_desktop_boot_size
       labels = {
-        my_label = "desktop-server"
+        my_label = "adq-ubuntudesktop"
       }
     }
   }
@@ -27,7 +27,7 @@ resource "google_compute_instance" "desktop-server" {
   }
 
   labels = {
-    desktop_server = "true"
+    adq-ubuntudesktop
   }
 
   service_account {
