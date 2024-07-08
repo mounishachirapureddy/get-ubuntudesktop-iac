@@ -7,11 +7,13 @@
     - "./environments/dev/groups/{{ HOSTS_VARS }}"
 
   tasks:
-    - name: Apply roles and include software variables if specified
+    - name: Include software variables if specified
       include_vars:
         file: "./softwares/{{ item }}"
       loop: "{{ SOFTWARE_FILES.split(',') }}"
       when: SOFTWARE_FILES != 'all.yaml'
+
+    - name: Apply roles in a loop
       include_role:
         name: "{{ item.role_name }}"
       loop: "{{ roles_to_apply }}"
