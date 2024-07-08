@@ -1,18 +1,14 @@
+---
 - name: Apply configurations based on group_vars
   hosts: "{{ HOSTS }}"
   vars:
     HOSTS_VARS: "{{ HOSTS_FILE | default('adq_ubuntudesktop.yaml') }}"
-    SOFTWARE_FILES: "{{ SOFTWARE_FILES.split(',') if SOFTWARE_FILES else ['all_softwares.yaml'] }}"
+    SOFTWARE_VARS: "{{ SOFTWARE_FILES | default('all.yaml') }}"
   vars_files:
     - "./environments/dev/groups/{{ HOSTS_VARS }}"
-    - "./softwares/{{ item }}"
-  tasks:
-    - name: Include software variables if specified
-      include_vars:
-        file: "./softwares/{{ item }}"
-      loop: "{{ SOFTWARE_FILES }}"
-      when: SOFTWARE_FILES != ['all_softwares.yaml']
+    - "./softwares/{{ SOFTWARE_VARS }}"
 
+  tasks:
     - name: Apply roles in a loop
       include_role:
         name: "{{ item.role_name }}"
