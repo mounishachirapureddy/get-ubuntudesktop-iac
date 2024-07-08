@@ -3,22 +3,22 @@
   apt:
     name: snapd
     state: present
-  when: ansible_action == 'apply'
+  when: playbook == 'apply'
  
 - name: Run and enable snapd
   systemd:
     name: snapd
     state: started
     enabled: yes
-  when: ansible_action == 'apply'
+  when: playbook == 'apply'
  
 - name: Install Notepad++ snap package
   snap:
     name: notepad-plus-plus
     classic: yes
     state: present
-  when: ansible_action == 'apply'
+  when: playbook == 'apply'
 
 - name: Uninstall Notepad++ snap package
   command: rm -rf /root/snap/notepad-plus-plus
-  when: ansible_action == 'destroy'
+  when: playbook == 'destroy'
