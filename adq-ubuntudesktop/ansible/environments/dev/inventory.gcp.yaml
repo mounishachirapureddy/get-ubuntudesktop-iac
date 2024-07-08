@@ -2,7 +2,7 @@ plugin: gcp_compute
 projects:
   - gcp-adq-pocproject-dev
 auth_kind: serviceaccount
-service_account_file: /root/ansible/service-account.json
+service_account_file: ../../service-account.json
 filters:
   - labels.dev=env
 hostnames:
