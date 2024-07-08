@@ -10,7 +10,7 @@
   tasks:
     - name: Include software variables if specified
       include_vars:
-        file: "./softwares/{{ item.SOFTWARE_VARS }}"
+        file: "./softwares/{{ item }}"
       loop: "{{ SOFTWARE_VARS.split(',') }}"
       when: SOFTWARE_VARS != 'all.yaml'
 
