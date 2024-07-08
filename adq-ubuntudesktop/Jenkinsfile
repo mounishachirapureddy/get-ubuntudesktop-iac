@@ -3,9 +3,7 @@ pipeline {
         label 'docker'
     }
     environment {
-        ENV = 'dev'
-        
-        // GCP_CREDENTIALS = credentials('project-dev-svc-json')
+        GCP_CREDENTIALS = credentials('SVC_JSON_DEV')
     }
     stages {
         stage('Checkout') {
@@ -13,30 +11,26 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/bpurnachander/get-ubuntudesktop-iac.git'
             }
         }
-        // stage('Get credentials') {
-        //     when {
-        //         expression {
-        //             return terraform in ['skip', 'apply']
-        //         }
-        //     }
-        //     steps {
-        //         script {
-        //             if (ansible_action == 'skip') {
-        //                 echo 'Stage skipped because ansible_action is skip'
-        //             } else {
-        //                 // Define the path where the GCP credentials will be copied on the agent
-        //                 def destPath = '/var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/service-account.json'
+        stage('Get credentials') {
+            when {
+                expression {
+                    return terraform in ['skip', 'apply']
+                }
+            }
+            steps {
+                script {
+                    
+                    def destPath = '/var/lib/jenkins/workspace/adq-ubuntudesktop/adq-ubuntudesktop/ansible/service-account.json'
 
-        //                 // Write the secret file to the destination path on the agent
-        //                 writeFile file: destPath, text: new String(readFile(env.GCP_CREDENTIALS).bytes)
+                    // Write the secret file to the destination path on the agent
+                    writeFile file: destPath, text: new String(readFile(env.GCP_CREDENTIALS).bytes)
 
-        //                 sh """
-        //                 sudo cp /var/lib/jenkins/workspace/desktop/adq-ubuntu-desktop/ansible/ansible.cfg /etc/ansible/ansible.cfg
-        //                 """
-        //             }
-        //         }
-        //     }
-        // }
+                    sh """
+                    sudo cp /var/lib/jenkins/workspace/adq-ubuntudesktop/adq-ubuntudesktop/ansible/ansible.cfg /etc/ansible/ansible.cfg
+                    """
+                }
+            }
+        }
         stage('terraform_plan') {
             when {
                 expression {
@@ -117,6 +111,34 @@ pipeline {
                     terraform init
                     terraform destroy --auto-approve --var-file="terraform.tfvars"
                     
+                    """
+                }
+            }
+        }
+        stage('Playbook_apply') {
+            when {
+                expression {
+                    return ANSIBLE == 'apply'
+                }
+            }
+            steps {
+                dir("./adq-ubuntudesktop/ansible/") {
+                    sh """
+                    ansible-playbook -i environments/$ENV main.yaml -e "${ANSIBLE_EXTRA_ARGS}"
+                    """
+                }
+            }
+        }
+        stage('Playbook_destroy') {
+            when {
+                expression {
+                    return ANSIBLE == 'destroy'
+                }
+            }
+            steps {
+                dir("./adq-ubuntudesktop/ansible/") {
+                    sh """
+                    ansible-playbook -i environments/$ENV main.yaml -e "${ANSIBLE_EXTRA_ARGS}"
                     """
                 }
             }
