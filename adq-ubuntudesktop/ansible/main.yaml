@@ -12,7 +12,7 @@
         file: "./softwares/{{ item }}"
       loop: "{{ SOFTWARE_FILES.split(',') }}"
       loop_control:
-        loop_var: item
+        loop_var: software_file
       when: SOFTWARE_FILE != 'all.yaml'
 
     - name: Apply roles in a loop
