@@ -5,7 +5,7 @@
     SOFTWARE_FILES: "{{ SOFTWARE_FILES | default('all_softwares.yaml') }}"
   vars_files:
     - "./environments/dev/groups/{{ HOSTS_VARS }}"
-    - "./softwares/{{ item }}"
+
   tasks:
     - name: Include software variables if specified
       include_vars:
