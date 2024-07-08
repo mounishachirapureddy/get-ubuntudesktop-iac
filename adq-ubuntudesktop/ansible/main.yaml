@@ -12,6 +12,7 @@
       include_vars:
         file: "./softwares/{{ item }}"
       loop: "{{ SOFTWARE_FILES }}"
+      when: SOFTWARE_FILES != ['all.yaml']
 
     - name: Apply roles in a loop
       include_role:
