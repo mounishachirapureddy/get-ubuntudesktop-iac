@@ -1,0 +1,15 @@
+---
+- name: Apply configurations based on group_vars
+  hosts: "{{ HOSTS }}"
+  vars:
+    HOSTS_VARS: "{{ HOSTS_FILE | default('adq_ubuntudesktop.yaml') }}"
+    SOFTWARES_VARS: "{{ SOFTWARES_FILE | default('all.yaml') }}"
+  vars_files:
+    - "./environments/dev/groups/{{ HOSTS_VARS }}"
+    - "./softwares/{{ SOFTWARES_VARS }}"
+
+  tasks:
+    - name: Apply roles in a loop
+      include_role:
+        name: "{{ item.role_name }}"
+      loop: "{{ roles_to_apply }}"
