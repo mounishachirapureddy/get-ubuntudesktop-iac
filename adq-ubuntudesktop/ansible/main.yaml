@@ -7,7 +7,8 @@
     - "./environments/{{ env }}/groups/{{ HOSTS_VARS }}"
   
   tasks:
-    - include_role:
+    - name: Include roles if tags match
+      include_role:
         name: "{{ item }}"
       loop:
         - java
@@ -15,4 +16,4 @@
         - tomcat
         - ubuntudesktop
         - notepad++
-      when: tags is not defined or tags | intersect(['all_softwares', 'java', 'python', 'tomcat', 'ubuntudesktop', 'notepad++']) | length > 0
+      when: tags == 'all_softwares'
