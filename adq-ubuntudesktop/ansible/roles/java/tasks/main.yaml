@@ -2,18 +2,18 @@
 - name: Update package
   command: apt update
   become: yes
-  when: operation == "apply"
+  when: ansible_action == "apply"
 
-- name: Install Java{{ java_version }}
+- name: Install Java{{ java_version | default('11') }}
   apt:
-    name: openjdk-{{ java_version }}-jdk
+    name: openjdk-{{ java_version | default('11') }}-jdk
     state: present
   become: yes
-  when: operation == "apply"
+  when: ansible_action == "apply"
 
-- name: Uninstall Java{{ java_version }}
+- name: Uninstall Java{{ java_version | default('11') }}
   apt:
-    name: openjdk-{{ java_version }}-jdk
+    name: openjdk-{{ java_version | default('11') }}-jdk
     state: absent
   become: yes
-  when: operation == "destroy"
+  when: ansible_action == "destroy"
