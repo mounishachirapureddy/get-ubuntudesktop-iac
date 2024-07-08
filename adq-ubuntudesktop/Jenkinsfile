@@ -122,6 +122,9 @@ pipeline {
                 }
             }
             steps {
+                script {
+                    sleep(time: 30, unit: 'SECONDS')
+                }
                 dir("./adq-ubuntudesktop/ansible/") {
                     sh """
                     ansible-playbook -i environments/$ENV main.yaml -e "${ANSIBLE_EXTRA_ARGS}"
