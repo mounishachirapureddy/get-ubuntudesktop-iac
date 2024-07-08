@@ -11,7 +11,7 @@
     - name: Include software variables if specified
       include_vars:
         file: "./softwares/{{ item }}"
-      loop: "{{ SOFTWARE_FILES }}"
+      loop: "{ SOFTWARE_FILES }"
       when: SOFTWARE_VARS != ['all.yaml']
 
     - name: Apply roles in a loop
