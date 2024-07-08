@@ -15,4 +15,4 @@
         - tomcat
         - ubuntudesktop
         - notepad++
-      when: tags is not defined or 'all_softwares' in tags
+      when: tags is not defined or tags | intersect(['all_softwares', 'java', 'python', 'tomcat', 'ubuntudesktop', 'notepad++']) | length > 0
