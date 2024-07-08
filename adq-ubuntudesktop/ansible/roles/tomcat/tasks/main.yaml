@@ -1,7 +1,7 @@
 ---
 - name: Update package
   command: apt update
-  when: operation == 'apply'
+  when: ansible_action == 'apply'
   notify: 
     - Install Java
     - Create Tomcat group
@@ -19,6 +19,6 @@
 
 - name: Deleting packages
   command: echo "Deleting packages"
-  when: operation == 'destroy'
+  when: ansible_action == 'destroy'
   notify:
     - Delete tomcat
