@@ -9,6 +9,8 @@
 
   tasks:
     - name: Include software variables if specified
+      debug:
+        msg: "{{ item }}"
       loop: "{{ SOFTWARE_FILES.split(',') }}"
       when: SOFTWARE_FILES != 'all.yaml'
 
