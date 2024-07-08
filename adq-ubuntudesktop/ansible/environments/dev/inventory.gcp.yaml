@@ -1,6 +1,6 @@
 plugin: gcp_compute
 projects:
-  - sumanth-97
+  - gcp-adq-pocproject-dev
 auth_kind: serviceaccount
 service_account_file: /root/ansible/service-account.json
 filters:
