@@ -1,0 +1,6 @@
+roles_to_apply:
+  - role_name: java
+  - role_name: python
+  - role_name: ubuntudesktop
+  - role_name: tomcat
+  - role_name: notepad++
