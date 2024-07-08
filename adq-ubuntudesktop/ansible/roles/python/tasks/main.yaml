@@ -1,28 +1,28 @@
 ---
 - name: Update package
   command: apt update
-  when: ansible_action == "apply"
+  when: playbook == "apply"
 
 - name: Install Python3
   apt:
     name: python3
     state: present
-  when: ansible_action == "apply"
+  when: playbook == "apply"
 
 - name: Install pip for Python3
   apt:
     name: python3-pip
     state: present
-  when: ansible_action == "apply"
+  when: playbook == "apply"
     
 - name: Uninstall pip for Python3
   apt:
     name: python3-pip
     state: absent
-  when: ansible_action == "destroy"
+  when: playbook == "destroy"
 
 - name: Uninstall Python3
   apt:
     name: python3
     state: absent
-  when: ansible_action == "destroy"
+  when: playbook == "destroy"
