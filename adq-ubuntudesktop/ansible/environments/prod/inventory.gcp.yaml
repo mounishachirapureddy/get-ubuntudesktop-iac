@@ -1,0 +1,12 @@
+plugin: gcp_compute
+projects:
+  - gcp-adq-pocproject-prod
+auth_kind: serviceaccount
+service_account_file: /root/ansible/service-account.json
+filters:
+  - labels.dev=env
+hostnames:
+  - private_ip
+groups:
+  tomcat: "'tomcat' in labels"
+  adq_ubuntudesktop: "'adq_ubuntudesktop' in labels"
