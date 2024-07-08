@@ -3,7 +3,7 @@
   hosts: "{{ HOSTS }}"
   vars:
     HOSTS_VARS: "{{ HOSTS_FILE | default('adq_ubuntudesktop.yaml') }}"
-    SOFTWARES_VARS: "{{ SOFTWARES_FILE | default('all.yaml') }}"
+    SOFTWARE_VARS: "{{ SOFTWARE_FILES | default('all.yaml') }}"
   vars_files:
     - "./environments/dev/groups/{{ HOSTS_VARS }}"
 
@@ -11,13 +11,13 @@
     - name: Include software variables if specified
       include_vars:
         file: "./softwares/{{ item }}"
-      loop: "{{ SOFTWARES_VARS.split(',') }}"
-      when: SOFTWARES_VARS != 'all.yaml'
+      loop: "{{ SOFTWARE_VARS.split(',') }}"
+      when: SOFTWARE_VARS != 'all.yaml'
 
     - name: Include default software variables
       include_vars:
         file: "./softwares/all.yaml"
-      when: SOFTWARES_VARS == 'all.yaml'
+      when: SOFTWARE_VARS == 'all.yaml'
 
     - name: Apply roles in a loop
       include_role:
