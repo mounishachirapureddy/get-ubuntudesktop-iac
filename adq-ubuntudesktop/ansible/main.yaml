@@ -6,9 +6,19 @@
     SOFTWARES_VARS: "{{ SOFTWARES_FILE | default('all.yaml') }}"
   vars_files:
     - "./environments/dev/groups/{{ HOSTS_VARS }}"
-    - "./softwares/{{ SOFTWARES_VARS }}"
 
   tasks:
+    - name: Include software variables if specified
+      include_vars:
+        file: "./softwares/{{ item }}"
+      loop: "{{ SOFTWARES_VARS.split(',') }}"
+      when: SOFTWARES_VARS != 'all.yaml'
+
+    - name: Include default software variables
+      include_vars:
+        file: "./softwares/all.yaml"
+      when: SOFTWARES_VARS == 'all.yaml'
+
     - name: Apply roles in a loop
       include_role:
         name: "{{ item.role_name }}"
