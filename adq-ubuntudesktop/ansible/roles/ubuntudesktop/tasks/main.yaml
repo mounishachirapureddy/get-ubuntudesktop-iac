@@ -1,7 +1,7 @@
 ---
 - name: Update package
   command: apt update
-  when: ansible_action == 'apply'
+  when: playbook == 'apply'
   notify:
     - Install wget, tasksel, and python3
     - Download Debian Linux Chrome Remote Desktop installation package
@@ -12,7 +12,7 @@
 
 - name: Deleting packages
   command: echo "Deleting packages"
-  when: ansible_action == 'destroy'
+  when: playbook == 'destroy'
   notify:
     - Remove Chrome Remote Desktop package
     - Remove Ubuntu desktop environment
