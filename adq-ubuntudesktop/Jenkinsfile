@@ -26,7 +26,7 @@ pipeline {
                     writeFile file: destPath, text: new String(readFile(env.GCP_CREDENTIALS).bytes)
 
                     sh """
-                    sudo cp /var/lib/jenkins/workspace/adq-ubuntudesktop/adq-ubuntudesktop/ansible/ansible.cfg /etc/ansible/ansible.cfg
+                    sudo cp ${env.WORKSPACE}/adq-ubuntudesktop/ansible/ansible.cfg /etc/ansible/ansible.cfg
                     """
                 }
             }
