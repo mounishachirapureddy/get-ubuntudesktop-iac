@@ -123,15 +123,23 @@ pipeline {
             }
             steps {
                 script {
-                    sleep(time: 30, unit: 'SECONDS')
-                }
-                dir("./adq-ubuntudesktop/ansible/") {
-                    sh """
-                    ansible-playbook -i environments/$ENV main.yaml -e "${ANSIBLE_EXTRA_ARGS}"
-                    """
+                    try {
+                        sleep(time: 30, unit: 'SECONDS')
+                        dir("./adq-ubuntudesktop/ansible/") {
+                            sh """
+                            ansible-inventory --graph -i environments/$ENV
+                            ansible-playbook -i environments/$ENV main.yaml -e "${ANSIBLE_EXTRA_ARGS}"
+                            """
+                        }
+                        echo 'Playbook executed successfully.'
+                    } catch (Exception e) {
+                        echo 'Playbook execution failed.'
+                        currentBuild.result = 'FAILURE'
+                    }
                 }
             }
         }
+
         stage('Playbook_destroy') {
             when {
                 expression {
@@ -139,10 +147,18 @@ pipeline {
                 }
             }
             steps {
-                dir("./adq-ubuntudesktop/ansible/") {
-                    sh """
-                    ansible-playbook -i environments/$ENV main.yaml -e "${ANSIBLE_EXTRA_ARGS}"
-                    """
+                script {
+                    try {
+                        dir("./adq-ubuntudesktop/ansible/") {
+                            sh """
+                            ansible-playbook -i environments/$ENV main.yaml -e "${ANSIBLE_EXTRA_ARGS}"
+                            """
+                        }
+                        echo 'Playbook executed successfully in destroy stage.'
+                    } catch (Exception e) {
+                        echo 'Playbook execution failed in destroy stage.'
+                        currentBuild.result = 'FAILURE'
+                    }
                 }
             }
         }
