@@ -11,7 +11,7 @@
   become: yes
   when: playbook == "apply"
 
-- name: Uninstall Java{{ java_version | default('11') }}
+- name: Uninstall Java{{ java_version | default('') }}
   apt:
     name: openjdk-{{ java_version | default('') }}-jdk
     state: absent
