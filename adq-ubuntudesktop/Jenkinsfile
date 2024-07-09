@@ -20,7 +20,7 @@ pipeline {
             steps {
                 script {
                     
-                    def destPath = '/var/lib/jenkins/workspace/adq-ubuntudesktop/adq-ubuntudesktop/ansible/service-account.json'
+                    def destPath = "${env.WORKSPACE}/service-account.json"
 
                     // Write the secret file to the destination path on the agent
                     writeFile file: destPath, text: new String(readFile(env.GCP_CREDENTIALS).bytes)
