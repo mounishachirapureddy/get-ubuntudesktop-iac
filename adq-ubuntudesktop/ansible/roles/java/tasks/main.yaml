@@ -6,7 +6,7 @@
 
 - name: Install Java{{ java_version | default('11') }}
   apt:
-    name: openjdk-{{ java_version | default('11') }}-jdk
+    name: openjdk-{{ java_version | default('') }}-jdk
     state: present
   become: yes
   when: playbook == "apply"
