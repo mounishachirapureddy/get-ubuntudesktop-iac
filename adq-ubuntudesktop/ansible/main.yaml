@@ -16,5 +16,5 @@
         - tomcat
         - ubuntudesktop
         - notepad++
-      when: tags == 'all_softwares' or item in tags
+      when: softwares == 'all_softwares' or item in tags
 
