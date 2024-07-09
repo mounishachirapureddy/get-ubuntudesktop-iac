@@ -43,7 +43,7 @@ pipeline {
                     sh """
                     
                     terraform init
-                    terraform plan --var-file="terraform.tfvars"
+                    terraform plan "${TERRAFORM_EXTRA_ARGS}"
                     
                     """
                 }
@@ -71,7 +71,7 @@ pipeline {
                                 sh """
                                 
                                 terraform init
-                                terraform apply --auto-approve --var-file="terraform.tfvars"
+                                terraform apply --auto-approve "${TERRAFORM_EXTRA_ARGS}"
                                 
                                 """
                             } else {
@@ -85,7 +85,7 @@ pipeline {
                             sh """
                             
                             terraform init
-                            terraform apply --auto-approve --var-file="terraform.tfvars"
+                            terraform apply --auto-approve "${TERRAFORM_EXTRA_ARGS}"
                             
                             """
                         }
@@ -109,7 +109,7 @@ pipeline {
                     sh """
                     
                     terraform init
-                    terraform destroy --auto-approve --var-file="terraform.tfvars"
+                    terraform destroy --auto-approve "${TERRAFORM_EXTRA_ARGS}"
                     
                     """
                 }
