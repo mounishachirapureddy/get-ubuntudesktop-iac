@@ -12,6 +12,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends apt-utils && \
     apt-get install -y git openssh-server openjdk-8-jdk maven && \
     apt-get install -y openjdk-11-jre-headless && \
+    apt-get install -y openjdk-17-jre-headless && \
     apt-get install -y iputils-ping && \
     apt-get install -y wget gnupg git software-properties-common vim sudo && \
     apt-get install -y python3-pip && \
