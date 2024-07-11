@@ -1,0 +1,145 @@
+pipeline {
+    agent {
+        label 'docker'
+    }
+    environment {
+        WORKSPACE_DIR = '/var/lib/jenkins/workspace/adq-python-app'
+        GCS_BUCKET = 'gs://adq-python-app'
+        PROJECT_ID = 'gcp-adq-pocproject-dev'
+        ZONE = 'us-central1-c'
+        INSTANCE_NAME = 'get-ubuntudesktop'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    def gitInfo = checkout([$class: 'GitSCM',
+                        branches: [[name: "*/${BRANCH_NAME}"]],
+                        userRemoteConfigs: [[url: 'https://github.com/Dineshkundo/flask.git']]
+                    ])
+                    def branchName = gitInfo.GIT_BRANCH.tokenize('/')[1]
+                    echo "Branch name: ${branchName}"
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir("${WORKSPACE_DIR}") {
+                    sh '''
+                    sudo apt-get update
+                    sudo apt install -y python3-pip
+                    sudo apt install -y python3.8-venv tmux
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install -r requirement.txt
+                    pip install gunicorn pyinstaller
+                    '''
+                }
+            }
+        }
+
+        stage('Package Application with PyInstaller') {
+            steps {
+                dir("${WORKSPACE_DIR}") {
+                    sh '''
+                    . venv/bin/activate
+                    pyinstaller --onefile run.py
+                    '''
+                }
+            }
+        }
+
+        stage('Upload Artifact') {
+            steps {
+                script {
+                    // Rename the artifact with the build number
+                    def artifactPath = "${WORKSPACE_DIR}/dist/run"
+                    def newArtifactPath = "${WORKSPACE_DIR}/dist/run.${BUILD_NUMBER}"
+                    def uploadPath = "${BRANCH_NAME}/dist/run.${BUILD_NUMBER}"
+                    
+                    sh """
+                    mv ${artifactPath} ${newArtifactPath}
+                    """                
+
+                    // Upload to Google Cloud Storage using gsutil
+                    sh """
+                    /google-cloud-sdk/bin/gsutil cp ${newArtifactPath} ${GCS_BUCKET}/${uploadPath}
+                    """
+                }
+            }
+        }
+
+        stage('Confirmation') {
+            steps {
+                script {
+                    input message: 'Are you sure you want to proceed with the deployment?', ok: 'Yes'
+                    
+                    def instanceStatus = sh(script: "gcloud compute instances describe ${INSTANCE_NAME} --project=${PROJECT_ID} --zone=${ZONE} --format='get(status)'", returnStdout: true).trim()
+                    
+                    if (instanceStatus != 'RUNNING') {
+                        error "VM instance is not running. Deployment stopped."
+                    }
+
+                    env.PRIVATE_IP = sh(script: '''
+                        gcloud compute instances list --filter="name=${INSTANCE_NAME}" --format="value(networkInterfaces[0].networkIP)"
+                    ''', returnStdout: true).trim()
+
+                    echo "Private IP: ${env.PRIVATE_IP}"
+                }
+            }
+        }
+
+        stage('Deployment') {
+            steps {
+                script {
+                    echo "Build Number: ${env.BUILD_NUMBER}"
+                    echo "Local File Path: ${WORKSPACE_DIR}/dist/run.${env.BUILD_NUMBER}"
+                    echo "Remote File Path: /root/dist/run.${env.BUILD_NUMBER}"
+
+                    // Ensure the target directory exists on the remote server
+                    sh """
+                    ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa root@${env.PRIVATE_IP} 'mkdir -p /root/dist'
+
+                    # Install dependencies on the target server
+                    ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa root@${env.PRIVATE_IP} '
+                        sudo apt-get update &&
+                        sudo apt install -y python3-pip python3.8-venv tmux &&
+                        python3 -m venv /root/venv &&
+                        source /root/venv/bin/activate &&
+                        pip install gunicorn pyinstaller
+                    '
+
+                    # Remove old executables
+                    ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa root@${env.PRIVATE_IP} 'rm -f /root/dist/run*'
+
+                    # Copy the new executable from Google Cloud Storage to Jenkins workspace
+                    /google-cloud-sdk/bin/gsutil cp ${GCS_BUCKET}/${BRANCH_NAME}/dist/run.${BUILD_NUMBER} ${WORKSPACE_DIR}/dist/
+
+                    # Verify the local file in Jenkins workspace
+                    ls -la ${WORKSPACE_DIR}/dist/
+
+                    # Transfer the executable to the remote server
+                    scp -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa ${WORKSPACE_DIR}/dist/run.${BUILD_NUMBER} root@${env.PRIVATE_IP}:/root/dist/run.${env.BUILD_NUMBER}
+
+                    # Verify the file transfer on the remote server
+                    ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa root@${env.PRIVATE_IP} 'ls -la /root/dist'
+
+                    # Ensure the file is executable on the remote server
+                    ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa root@${env.PRIVATE_IP} "chmod +x /root/dist/run.${env.BUILD_NUMBER}"
+
+                    # Kill any existing tmux session with the same name
+                    ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa root@${env.PRIVATE_IP} "tmux kill-session -t gunicorn_session || true"
+
+                    # Run the new executable in a tmux session on the remote server
+                    ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa root@${env.PRIVATE_IP} "tmux new-session -d -s gunicorn_session '/root/dist/run.${env.BUILD_NUMBER} --bind 0.0.0.0:5000'"
+
+                    # List tmux sessions to verify if the session is active
+                    ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/id_rsa root@${env.PRIVATE_IP} "tmux ls"
+                    """
+                }
+            }
+        }
+    }
+}
