@@ -1,70 +1,43 @@
 parameters for environments:
-parameter: ENV
+Choice Parameter: ENV
+Choices:
   * ---
   * dev
   * prod
 
 parameters for terraform:
-parameter: tfm_action
-  * ---
-  * init
+Choice Parameter: terraform
+Choices:
+  * skip
   * plan
   * apply
-  * destroy
+  * destroy 
+
+Multi-line String Parameter: TERRAFORM_EXTRA_ARGS
+Default Value: 
+  * --var-file="terraform.tfvars"
+
+parameters for ansible:
+Choice Parameter: ANSIBLE
+Choices:
   * skip
-
-parameters for ansible_hosts:
-parameter: ansible_hosts
-  * ---
-  * ubuntudesktop
-
-parameters for ansible_action:
-parameter: ansible_action
-  * ---
   * apply
   * destroy
-  * skip
 
-parameters for software:
-parameter: software
-  * all
-  * desktop
-  * tomcat
-  * notepad++
-  * python
-  * java
+Multi-line String Parameter: ANSIBLE_EXTRA_ARGS
+Default Value:
+  * playbook=$ANSIBLE
+  * env=$ENV
+  * softwares=all_softwares
 
-parameters for software_versions:
-parameter: python_version
-  * 3
+Description:
+ANSIBLE_EXTRA_ARGS: HOSTS_FILE, tomcat_base_version, tomcat_version, java_version.
 
-parameter: java_version
-  * 11
-  * 17
-  * 8
+HOSTS_FILE: adq_ubuntudesktop.yaml(default), all_hosts.yaml
 
-parameter: tomcat_base_version
-  * 9
-  * 10
+tags: all_softwares(default), java, python, tomcat, ubuntudesktop, notepad++
 
-parameter: tomcat_version
-  * 9.0.89
-  * 9.0.90
-  * 10.1.24
-  * 10.1.25
-
-parameter: upgrade_software
-  * ---
-  * tomcat
-
-
-ansible command:
----
-* ansible-playbook -e "ansible_hosts=<your_option> software=<your_option> version=<your_option> operation=<your_option>" master.yaml
-
-NOTE: Add parameters
-  ---
-  * Docker Hub credentials as "username and password".
-  * Jenkins credentials as "username and password".
-  * Service-account credentials as "secretfile".
-  * GitHub credentials as "username and password". (password= token)
+NOTE: 
+* Must pass "playbook=&ANSIBLE" & "env=$ENV" as it defines weather to install or uninstall software packages in particular environments.
+* Adjust tags values according to softwares you want to install or uninstall.
+* Add other parameters if required.
