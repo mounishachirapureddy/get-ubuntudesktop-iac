@@ -82,7 +82,7 @@ pipeline {
                 }
             }
         }
-        stage('Download and Deploy Artifact') {
+        stage('Deployment') {
             steps {
                 script {
                     // Use Jenkins credentials to authenticate with Nexus
