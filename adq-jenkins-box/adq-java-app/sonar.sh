@@ -15,6 +15,8 @@ chown sonar:sonar /opt/sonarqube-9.9.6.92038 -R
 chmod 777 /opt/ sonarqube-9.9.6.92038 -R
 su - sonar
 
+------------------------------------------------
+#Steps to follow:-
 #run this on server manually
 #cd /opt/sonarqube-9.9.6.92038/bin/linux-x86-64/
 #sh sonar.sh start
