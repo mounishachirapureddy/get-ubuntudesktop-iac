@@ -22,7 +22,7 @@ Repository: https://github.com/SaravanaNani/ansible-setup-gcp.git
 
 ### Note: The Jenkinsfile and Source code for this Deployment is taken from below GitHub Repo
 
-### Repository: https://github.com/SaravanaNani/jenkins-java-project.git
+Repository: https://github.com/SaravanaNani/jenkins-java-project.git
 
 ### SonarQube step-up:
 
