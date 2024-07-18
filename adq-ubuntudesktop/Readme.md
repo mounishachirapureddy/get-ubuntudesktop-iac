@@ -27,12 +27,12 @@ This project aims to automate the provisioning and configuration of infrastructu
 ## Service Account Setup: 
 
 ### Step-1 
-`Go to My First Project` (melodic-agency-427111-k1)
+ Go to My First Project (melodic-agency-427111-k1) 
 
  Create a Service Account with **Owner** Permission.
 
 ### Step-2
-Now Go to "gcp-adq-pocproject-dev"
+Now Go to "gcp-adq-pocproject-dev" 
 Add base project (My-First-Project) service account Email as principal in project "gcp-adq-pocproject-dev" .
 Add Role Owner Permission.
 
