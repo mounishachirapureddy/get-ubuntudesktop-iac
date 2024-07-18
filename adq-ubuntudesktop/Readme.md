@@ -128,6 +128,7 @@ terraform apply --auto-approve --var-file=terraform.tfvars
 ```
 pwd
 /root/get-ubuntudesktop-iac/adq-jenkins-box
+
 adq-jenkins-box/
 ├── adq-get-java-app
 │   └── Jenkinsfile
