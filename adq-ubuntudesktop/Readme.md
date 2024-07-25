@@ -172,9 +172,10 @@ docker push username/repo_name
 > [!IMPORTANT]
 Modification Required
 ```
->Make Sure to change in terraform.tfvars 
->get-ubuntudesktop-iac/adq-jenkins-box/terraform.tfvars
->get-ubuntudesktop-iac/terraform/environments/dev/terraform.tfvars
+>Make Sure to change in terraform.tfvars
+
+>In path "get-ubuntudesktop-iac/adq-jenkins-box/terraform.tfvars"
+>In path "get-ubuntudesktop-iac/terraform/environments/dev/terraform.tfvars"
 ```
 
 ### Working with Jenkins Server
