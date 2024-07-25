@@ -307,3 +307,59 @@ NOTE:
 
 ### Step-6
 Build your pipeline with appropriate choices & arguments
+
+### Troubleshooting Errors
+```
+1.Connection refused:
+	Cause: Openssh-client not working properly.
+	Remedy: Wait for few seconds after VM is created.
+2.Permission denied:
+	Cause: User has no permission to use private key.
+	Remedy: Check the user type and change permissions of private key.
+3.Host key verification failed:
+	Cause: Unable to verify Host key.
+	Remedy: echo 'host_key_checking = False' | sudo tee -a 					/etc/ansible/ansible.cfg
+4.Error: Jenkins doesn’t have label ‘docker-agent’
+	Remedy: Check Slave User credentials
+	Terraform Errors Troubleshooting
+	
+5.Error 409: Resource Already Exists
+6.Error 400: Syntax Error
+	Remedy: Check the Syntax in Terraform Script
+7.Erro 404: API error
+	Remedy: Enable API for the Resources to be Created
+8.If new project make sure to enable the below api to ssh the vm server:-
+	1)Network Management API
+	2)Cloud Identity-Aware Proxy API
+ 
+ 	ERROR Message
+  	Faild to get access token
+   	Unknown error
+    	Retry   Troubleshoot
+
+  	sol:- Make sure to check the network and wifi
+   	OR
+    	Talk with your network admin 
+     	OR
+      	Try with mobile network to ssh.
+```
+### Terraform Errors
+  
+![image-1](https://fortunate-headlight-ff9.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2Fffcbdfcf-e93f-43da-89e7-0ec6cd06ca40%2Ffcedd50f-c357-4095-a1eb-5a69911a8031%2FUntitled.png?table=block&id=684961f6-331f-4df7-b220-26fc61d296f3&spaceId=ffcbdfcf-e93f-43da-89e7-0ec6cd06ca40&width=1090&userId=&cache=v2)
+
+![image-2](https://fortunate-headlight-ff9.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2Fffcbdfcf-e93f-43da-89e7-0ec6cd06ca40%2Fcfa14ec5-f93d-464e-b6e9-92121b750dca%2FUntitled.png?table=block&id=bd49b709-06ba-4d4b-beb0-0b0a01ae4d46&spaceId=ffcbdfcf-e93f-43da-89e7-0ec6cd06ca40&width=1270&userId=&cache=v2)
+
+### Remedy-2: Remove the Lock File Manually
+Since you are dealing with a local state, you can manually delete the lock file to remove the lock. 
+Follow these steps:-
+```
+• cd /Path/to/terraform/
+• rm .terraform.tfstate.lock.info
+Remedy-3: Terminate the Running Terraform Processes
+• ps aux | grep terraform
+• kill -9 <PID>
+• For eg: kill -9 1425
+```
+Now Retry the Terraform Command: terraform apply (state lock will be unlocked
+
+ 
