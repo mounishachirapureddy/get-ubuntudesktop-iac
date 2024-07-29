@@ -23,3 +23,10 @@ su - sonar
 #sh sonar.sh status
 
 #echo "user=admin & password=admin"
+--------------------------------------------------------------------------------------------------------------------------------------
+#Note: make sure while you starting the sonarqube the default java-17 is configured to VM if not set java version using below command:
+
+# -> update-alternatives --config java
+
+# select the version you required by the numbers visible on the terminal for each version and then start the sonarqube
+--------------------------------------------------------------------------------------------------------------------------------------
