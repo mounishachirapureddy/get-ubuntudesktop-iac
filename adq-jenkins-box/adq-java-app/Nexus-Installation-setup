@@ -1,0 +1,86 @@
+sudo apt update
+sudo apt install openjdk-11-jre-headless
+sudo update-alternatives --config java
+
+cd /opt
+sudo wget https://download.sonatype.com/nexus/3/latest-unix.tar.gz
+tar -zxvf latest-unix.tar.gz
+sudo mv /opt/nexus-3.70.1-02 /opt/nexus
+sudo adduser nexus
+
+#To set no password for nexus user open the visudo file in ubuntu
+
+sudo visudo
+
+#Add below line into it , save and exit
+
+nexus ALL=(ALL) NOPASSWD: ALL
+
+
+sudo chown -R nexus:nexus /opt/nexus
+sudo chown -R nexus:nexus /opt/sonatype-work
+
+#To run nexus as service at boot time, open /opt/nexus/bin/nexus.rc file, uncomment it and add nexus user as shown below
+
+sudo nano /opt/nexus/bin/nexus.rc
+
+#uncomment and add user nexus init
+
+run_as_user="nexus"
+--------------------------------------------------------------------------------------------
+
+#To Increase the nexus JVM heap size, open the /opt/nexus/bin/nexus.vmoptions file, you can modify the size as shown below
+#In the below settings, the directory is changed from ../sonatype-work to ./sonatype-work
+
+vim /opt/nexus/bin/nexus.vmoptions
+
+-Xms1024m
+-Xmx1024m
+-XX:MaxDirectMemorySize=1024m
+
+-XX:LogFile=./sonatype-work/nexus3/log/jvm.log
+-XX:-OmitStackTraceInFastThrow
+-Djava.net.preferIPv4Stack=true
+-Dkaraf.home=.
+-Dkaraf.base=.
+-Dkaraf.etc=etc/karaf
+-Djava.util.logging.config.file=/etc/karaf/java.util.logging.properties
+-Dkaraf.data=./sonatype-work/nexus3
+-Dkaraf.log=./sonatype-work/nexus3/log
+-Djava.io.tmpdir=./sonatype-work/nexus3/tmp
+----------------------------------------------------------
+
+sudo nano /etc/systemd/system/nexus.service
+
+#paste the below code init by removing old one
+
+[Unit]
+Description=nexus service
+After=network.target
+
+[Service]
+Type=forking
+User=nexus
+Group=nexus
+Environment="JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64"
+ExecStart=/opt/nexus/bin/nexus start
+ExecStop=/opt/nexus/bin/nexus stop
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+
+--------------------------------------------------------------------
+#run manually
+
+sudo systemctl daemon-reload
+sudo systemctl restart nexus
+sudo systemctl status nexus
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
+#Note: make sure while you starting the Nexus the default java-11 is configured to VM if not set java version using below command:
+
+# -> update-alternatives --config java
+
+# select the version you required by the numbers visible on the terminal for each version and then start the nexus
+--------------------------------------------------------------------------------------------------------------------------------------
