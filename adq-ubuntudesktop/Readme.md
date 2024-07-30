@@ -362,6 +362,6 @@ Remedy-3: Terminate the Running Terraform Processes
 • kill -9 <PID>
 • For eg: kill -9 1425
 ```
-Now Retry the Terraform Command: terraform apply (state lock will be unlocked
+Now Retry the Terraform Command: terraform apply (state lock will be unlocked)
 
  
