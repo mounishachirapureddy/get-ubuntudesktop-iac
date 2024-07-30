@@ -320,7 +320,7 @@ Build your pipeline with appropriate choices & arguments
 	Remedy: Check the user type and change permissions of private key.
 3.Host key verification failed:
 	Cause: Unable to verify Host key.
-	Remedy: echo 'host_key_checking = False' | sudo tee -a 					/etc/ansible/ansible.cfg
+	Remedy: echo 'host_key_checking = False' | sudo tee -a /etc/ansible/ansible.cfg
 4.Error: Jenkins doesn’t have label ‘docker-agent’
 	Remedy: Check Slave User credentials
 	Terraform Errors Troubleshooting
