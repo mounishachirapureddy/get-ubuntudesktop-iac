@@ -3,6 +3,8 @@ Click here for complete [Documentation](https://fortunate-headlight-ff9.notion.s
 
 # Automating Infrastructure and Software Configuration with Terraform, Ansible, Jenkins, and Docker
 
+  ![image](https://github.com/user-attachments/assets/17a77772-15ea-4504-b4de-30d6800389b4)
+
 This project aims to automate the provisioning and configuration of infrastructure and software for setting up a remote desktop environment using Terraform, Ansible, Jenkins, and Docker.
 
 ### Create 3 Projects
