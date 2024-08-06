@@ -3,11 +3,9 @@
   hosts: adq_ubuntudesktop
   
   roles:
-    - name: Apply tags to tasks within included file
-      include_role:
-        name: java
-      tags:
-        - java
+    - name: Apply Java Installation
+      role: java
+      tags: java
   
   #tasks
   #  - name: Include roles if tags match
