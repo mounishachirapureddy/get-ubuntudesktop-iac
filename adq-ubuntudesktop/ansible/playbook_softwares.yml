@@ -6,9 +6,6 @@
     - name: Apply tags to tasks within included file
       include_role:
         name: java
-        apply:
-          tags:
-            - java
       tags:
         - java
   
