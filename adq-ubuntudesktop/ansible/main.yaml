@@ -12,5 +12,3 @@
         - tomcat
         - ubuntudesktop
         - notepad++
-      when: softwares == 'all_softwares' or item in softwares
-
