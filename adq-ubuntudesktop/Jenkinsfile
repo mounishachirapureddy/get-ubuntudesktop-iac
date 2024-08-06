@@ -128,7 +128,7 @@ pipeline {
                         dir("./adq-ubuntudesktop/ansible/") {
                             sh """
                             ansible-inventory --graph -i environments/$ENV
-                            ansible-playbook -i environments/$ENV main.yaml -e "${ANSIBLE_EXTRA_ARGS}"
+                            ansible-playbook -i environments/$ENV main.yaml "${ANSIBLE_EXTRA_ARGS}"
                             """
                         }
                         echo 'Playbook executed successfully.'
