@@ -1,6 +1,6 @@
 ---
 - name: Apply configurations based on group_vars
-  hosts: "{{ HOSTS }}"
+  hosts: all
   vars:
     HOSTS_VARS: "{{ HOSTS_FILE | default('adq_ubuntudesktop.yaml') }}"
   vars_files:
