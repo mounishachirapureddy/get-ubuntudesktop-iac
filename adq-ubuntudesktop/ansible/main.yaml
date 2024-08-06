@@ -1,14 +1,5 @@
 ---
-- name: Apply configurations based on group_vars
-  hosts: all
-  
-  tasks:
-    - name: Include roles if tags match
-      include_role:
-        name: "{{ item }}"
-      loop:
-        - java
-        - python
-        - tomcat
-        - ubuntudesktop
-        - notepad++
+
+import_playbook: playbook_softwares.yml
+#import_playbook: playbook_services.yml
+#import_playbook: playbook_deployment.yml
