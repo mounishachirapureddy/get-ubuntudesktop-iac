@@ -6,6 +6,10 @@
     - name: Apply Java Installation
       role: java
       tags: java
+
+    - name: Apply python Installation
+      role: python
+      tags: python
   
   #tasks
   #  - name: Include roles if tags match
