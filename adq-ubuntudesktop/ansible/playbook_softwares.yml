@@ -1,6 +1,6 @@
 ---
 - name: Apply configurations based on group_vars
-  hosts: all
+  hosts: adq_ubuntudesktop
   
   roles:
     - name: Apply tags to tasks within included file
