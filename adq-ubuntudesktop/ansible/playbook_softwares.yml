@@ -2,14 +2,23 @@
 - name: Apply configurations based on group_vars
   hosts: all
   
-  
-  tasks
-    - name: Include roles if tags match
+  roles:
+    - name: Apply tags to tasks within included file
       include_role:
-        name: "{{ item }}"
-      loop:
+        name: java
+        apply:
+          tags:
+            - java
+      tags:
         - java
-        - python
-        - tomcat
-        - ubuntudesktop
-        - notepad++
+  
+  #tasks
+  #  - name: Include roles if tags match
+  ##    include_role:
+   #     name: "{{ item }}"
+   #   loop:
+   #     - java
+    #    - python
+     #   - tomcat
+      #  - ubuntudesktop
+       # - notepad++
