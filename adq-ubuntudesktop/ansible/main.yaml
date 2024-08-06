@@ -1,3 +1,4 @@
-ansible.builtin.import_playbook: playbook_softwares.yaml
+---
+- import_playbook: playbook_softwares.yaml
 #import_playbook: playbook_services.yml
 #import_playbook: playbook_deployment.yml
