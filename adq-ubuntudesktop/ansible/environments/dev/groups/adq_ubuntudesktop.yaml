@@ -1,1 +1,2 @@
 HOSTS: adq_ubuntudesktop
+java_version: '11'
