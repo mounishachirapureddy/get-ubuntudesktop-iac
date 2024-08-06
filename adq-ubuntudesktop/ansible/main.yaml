@@ -1,10 +1,6 @@
 ---
 - name: Apply configurations based on group_vars
   hosts: all
-  vars:
-    HOSTS_VARS: "{{ HOSTS_FILE | default('adq_ubuntudesktop.yaml') }}"
-  vars_files:
-    - "./environments/{{ env }}/groups/{{ HOSTS_VARS }}"
   
   tasks:
     - name: Include roles if tags match
