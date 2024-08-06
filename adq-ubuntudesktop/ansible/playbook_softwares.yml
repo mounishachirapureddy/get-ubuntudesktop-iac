@@ -1,6 +1,6 @@
 ---
 - name: Apply configurations based on group_vars
-  hosts: adq_ubuntudesktop
+  hosts: all
   
   roles:
     - name: Apply Java Installation
