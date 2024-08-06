@@ -9,8 +9,4 @@
     state: present
   become: yes
 
-- name: Uninstall Java{{ java_version | default('11') }}
-  apt:
-    name: openjdk-{{ java_version | default('11') }}-jdk
-    state: absent
-  become: yes
+
