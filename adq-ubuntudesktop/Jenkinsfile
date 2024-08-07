@@ -127,6 +127,7 @@ pipeline {
                         //sleep(time: 30, unit: 'SECONDS')
                         dir("./adq-ubuntudesktop/ansible/") {
                             sh """
+                            ansible --version
                             ansible-inventory --graph -i environments/$ENV
                             ansible-playbook -i environments/$ENV main.yaml "${ANSIBLE_EXTRA_ARGS}"
                             """
