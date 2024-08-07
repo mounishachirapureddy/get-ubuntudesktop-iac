@@ -1,7 +1,6 @@
 ---
 - name: Update package
   command: apt update
-  when: playbook == 'apply'
   notify: 
     - Install Java
     - Create Tomcat group
@@ -16,9 +15,4 @@
     - Configure context.xml
     - Ensure tomcat-users.xml permissions
     - Enable and start Tomcat
-
-- name: Deleting packages
-  command: echo "Deleting packages"
-  when: playbook == 'destroy'
-  notify:
-    - Delete tomcat
+    
