@@ -124,7 +124,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        //sleep(time: 30, unit: 'SECONDS')
+                        sleep(time: 30, unit: 'SECONDS')
                         dir("./adq-ubuntudesktop/ansible/") {
                             sh """
                             ansible --version
