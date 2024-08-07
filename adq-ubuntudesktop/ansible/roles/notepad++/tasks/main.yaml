@@ -3,13 +3,13 @@
   apt:
     name: snapd
     state: present
-	
+    
 - name: Run and enable snapd
   systemd:
     name: snapd
     state: started
     enabled: yes
- 
+    
 - name: Install Notepad++ snap package
   snap:
     name: notepad-plus-plus
